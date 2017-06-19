@@ -6,17 +6,16 @@ using namespace std;
 #include <vector>
 
 #include "Strategy.hpp"
-#include "BettingStrategy.hpp"
 
 class StrategySequence
     : public Strategy
 {
   private:
-    vector <BettingStrategy> BettingStrategies;
+    vector <vector <unsigned int> > BettingStrategies;
     vector <unsigned int> levelCounters;
   public:
     StrategySequence();
-    unsigned int getBet(unsigned int trueCount) const;
+    unsigned int getBet(double trueCount) const;
 };
 
 #endif

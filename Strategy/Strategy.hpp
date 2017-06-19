@@ -12,12 +12,12 @@ class Strategy
 {
   private:
     string name;
-    vector <int> levels;
-    vector <PlayingStrategy> playingStrategies;
+    vector <double> levels;
+    vector <PlayingStrategy*> playingStrategies;
   public:
     Strategy();
-    char getPlay(unsigned int trueCount, string playerHand, char dealerHand) const;
-    virtual unsigned int getBet(unsigned int trueCount) const = 0;    
+    char getPlay(double trueCount, string playerHand, char dealerHand) const;
+    virtual unsigned int getBet(double trueCount) const = 0;    
 };
 
 #endif

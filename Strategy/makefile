@@ -8,12 +8,10 @@ PlayingStrategy.o: PlayingStrategy.cpp PlayingStrategy.hpp
 	g++ -Wall -c PlayingStrategy.cpp
 
 
-StrategySequence.o: StrategySequence.cpp StrategySequence.hpp BettingStrategy.o
+StrategySequence.o: StrategySequence.cpp StrategySequence.hpp
 	g++ -Wall -c StrategySequence.cpp
-StrategyMultiplier.o: StrategyMultiplier.cpp StrategyMultiplier.hpp BettingStrategy.o
+StrategyMultiplier.o: StrategyMultiplier.cpp StrategyMultiplier.hpp
 	g++ -Wall -c StrategyMultiplier.cpp
-BettingStrategy.o: BettingStrategy.cpp BettingStrategy.hpp
-	g++ -Wall -c BettingStrategy.cpp
 	
 clean:
 	rm *.o

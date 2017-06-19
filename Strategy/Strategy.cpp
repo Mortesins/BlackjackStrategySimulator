@@ -5,7 +5,7 @@ Strategy::Strategy()
     
 }
 
-char Strategy::getPlay(unsigned int trueCount, string playerHand, char dealerHand) const
+char Strategy::getPlay(double trueCount, string playerHand, char dealerHand) const
 {
     
 }
