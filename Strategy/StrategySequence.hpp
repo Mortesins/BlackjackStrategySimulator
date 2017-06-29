@@ -11,11 +11,11 @@ class StrategySequence
     : public Strategy
 {
   private:
-    vector <vector <unsigned int> > BettingStrategies;
-    vector <unsigned int> levelCounters;
+    vector <vector <unsigned> > BettingStrategies;
+    vector <unsigned> levelCounters;
   public:
     StrategySequence();
-    unsigned int getBet(double trueCount) const;
+    unsigned getBet(double trueCount) const;
 };
 
 #endif

@@ -5,7 +5,7 @@ StrategySequence::StrategySequence()
     
 }
 
-unsigned int StrategySequence::getBet(double trueCount) const
+unsigned StrategySequence::getBet(double trueCount) const
 {
     return 1;
 }

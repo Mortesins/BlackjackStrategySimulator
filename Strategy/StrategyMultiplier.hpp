@@ -14,7 +14,7 @@ class StrategyMultiplier
     vector <double> multipliers;
   public:
     StrategyMultiplier();
-    unsigned int getBet(double trueCount) const;
+    unsigned getBet(double trueCount) const;
 };
 
 #endif
