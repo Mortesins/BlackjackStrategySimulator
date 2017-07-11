@@ -15,20 +15,24 @@ StopStrategy::StopStrategy(unsigned budget, double percentageOverBudget, unsigne
 
 StopStrategy::StopStrategy()
 {
-    StopStrategy(80,2);
+    this->stopAt = 80;
+    this->numberOfLosses = 2;
 }
 
 StopStrategy::StopStrategy(unsigned stopAt)
 {
-    StopStrategy(stopAt,2);
+    this->stopAt = stopAt;
+    this->numberOfLosses = 2;
 }
 
 StopStrategy::StopStrategy(unsigned budget, float percentageOverBudget)
 {
-    StopStrategy(budget,percentageOverBudget,2);
+    stopAt = (unsigned)round( budget * ( 1 + percentageOverBudget / 100.0 ) );
+    this->stopAt = stopAt;
+    this->numberOfLosses = 2;
 }
 
-unsigned StopStrategy::canPlaceBet(unsigned budget, unsigned bet, unsigned consecutiveLosses)
+unsigned StopStrategy::canPlaceBet(unsigned budget, unsigned bet, unsigned consecutiveLosses) const
 {
     if (budget < stopAt || consecutiveLosses == 0)
     {
@@ -53,12 +57,12 @@ unsigned StopStrategy::canPlaceBet(unsigned budget, unsigned bet, unsigned conse
     }
 }
 
-bool StopStrategy::canSplit(unsigned budget, unsigned bet)
+bool StopStrategy::canSplit(unsigned budget, unsigned bet) const
 {
     return true;
 }
  
-bool StopStrategy::canDouble(unsigned budget, unsigned bet)
+bool StopStrategy::canDouble(unsigned budget, unsigned bet) const
 {
     if (budget < stopAt)
         return true;

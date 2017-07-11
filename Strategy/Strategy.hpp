@@ -11,15 +11,15 @@ using namespace std;
 
 class Strategy
 {
-  private:
+  protected:
     string name;
     vector <double> levels;
     vector <PlayingStrategy*> playingStrategies;
     StopStrategy stopStrategy;
   public:
     Strategy();
-    char getPlay(double trueCount, string playerHand, char dealerHand) const;
-    virtual unsigned getBet(double trueCount) const = 0;    
+    char getPlay(double trueCount, vector <unsigned short> cards, char dealerHand) const;
+    virtual unsigned getBet(double trueCount, unsigned budget, unsigned bet, unsigned consecutiveLosses) const = 0;    
 };
 
 #endif
