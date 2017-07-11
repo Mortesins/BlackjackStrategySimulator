@@ -136,7 +136,7 @@ PlayingStrategy::PlayingStrategy()
     /****************/
 }
 
-char PlayingStrategy::getPlay(vector <unsigned short> cards, char dealerHand, vector <char> actionsNotAllowed) const
+char PlayingStrategy::getPlay(const vector <unsigned short>& cards, char dealerHand, vector <char> actionsNotAllowed) const
 {
     // order in which I check the actions depends on "orderOfActions"
     char action;
@@ -196,13 +196,13 @@ char PlayingStrategy::getPlay(vector <unsigned short> cards, char dealerHand, ve
     return play;
 }
 
-char PlayingStrategy::getPlay(vector <unsigned short> cards, char dealerHand) const
+char PlayingStrategy::getPlay(const vector <unsigned short>& cards, char dealerHand) const
 {
     vector <char> tmp;
     return getPlay(cards,dealerHand,tmp);
 }
 
-vector <unsigned short> PlayingStrategy::getCoordinates(vector <unsigned short> cards, char dealerHand) const
+vector <unsigned short> PlayingStrategy::getCoordinates(const vector <unsigned short>& cards, char dealerHand) const
 {
     // first element row == player hand, second element column == dealerHand
     vector <unsigned short> coord;

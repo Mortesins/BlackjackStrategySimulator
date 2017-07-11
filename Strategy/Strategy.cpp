@@ -18,7 +18,7 @@ Strategy::Strategy()
     playingStrategies.push_back(tmp); // same playing strategy for all levels
 }
 
-char Strategy::getPlay(double trueCount, vector <unsigned short> cards, char dealerHand) const
+char Strategy::getPlay(double trueCount, const vector <unsigned short>& cards, char dealerHand) const
 {
     unsigned i = 0;
     bool found = false;

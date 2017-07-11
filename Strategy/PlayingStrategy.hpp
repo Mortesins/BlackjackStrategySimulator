@@ -14,12 +14,12 @@ class PlayingStrategy
     bool split[10][10];
     bool surrender[28][10];
     char orderOfActions[4];
-    vector <unsigned short> getCoordinates(vector <unsigned short> cards, char dealerHand) const; //returns row and column of table
+    vector <unsigned short> getCoordinates(const vector <unsigned short>& cards, char dealerHand) const; //returns row and column of table
     void printStrategy() const;
   public:
     PlayingStrategy();
-    char getPlay(vector <unsigned short> cards, char dealerHand) const;
-    char getPlay(vector <unsigned short> cards, char dealerHand, vector <char> actionsNotAllowed) const;
+    char getPlay(const vector <unsigned short>& cards, char dealerHand) const;
+    char getPlay(const vector <unsigned short>& cards, char dealerHand, vector <char> actionsNotAllowed) const;
 };
 
 #endif

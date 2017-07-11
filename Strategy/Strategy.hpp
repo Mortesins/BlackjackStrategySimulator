@@ -18,7 +18,7 @@ class Strategy
     StopStrategy stopStrategy;
   public:
     Strategy();
-    char getPlay(double trueCount, vector <unsigned short> cards, char dealerHand) const;
+    char getPlay(double trueCount, const vector <unsigned short>& cards, char dealerHand) const;
     virtual unsigned getBet(double trueCount, unsigned budget, unsigned bet, unsigned consecutiveLosses) const = 0;    
 };
 
