@@ -18,6 +18,29 @@ Strategy::Strategy()
     playingStrategies.push_back(tmp); // same playing strategy for all levels
 }
 
+char Strategy::getPlay(double trueCount, const vector <unsigned short>& cards, char dealerHand, vector <char> actionsNotAllowed, unsigned budget, unsigned bet) const
+{       
+        // actions not allowed passed as parameter should be filled based on Rules
+        // this method then adds actions not allowed by budget, as dictated by StopStrategy methods (canSplit, canDouble)
+    unsigned i = 0;
+    bool found = false;
+    
+    while (!found && i < playingStrategies.size())
+    {
+        if (trueCount > levels[i])
+            i++;
+        else
+            found = true;
+    }
+    
+    if (!stopStrategy.canDouble(budget,bet))
+        actionsNotAllowed.push_back('D');
+    else if (!stopStrategy.canSplit(budget,bet))
+        actionsNotAllowed.push_back('P');
+        
+    return playingStrategies[i]->getPlay(cards,dealerHand,actionsNotAllowed);
+}
+
 char Strategy::getPlay(double trueCount, const vector <unsigned short>& cards, char dealerHand) const
 {
     unsigned i = 0;
@@ -32,8 +55,6 @@ char Strategy::getPlay(double trueCount, const vector <unsigned short>& cards, c
     }
     return playingStrategies[i]->getPlay(cards,dealerHand);
 }
-
-
 
 
 
