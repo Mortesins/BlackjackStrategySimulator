@@ -10,16 +10,16 @@ class Dealer
   private:
     vector <unsigned short> cards;
     unsigned short hand;
+    bool softhit;
     bool soft;
-    void updateHand();
 
   public:
+    Dealer(bool softhit);
     unsigned short getHand();
     unsigned short upCard();
-    void play();
-    void hit(unsigned short h);
+    bool hit();
+    void newCard(unsigned short c);
+    bool blackjack();
 };
-
-
 
 #endif

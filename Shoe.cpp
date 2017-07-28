@@ -24,7 +24,10 @@ void Shoe::shuffle()
             cards.push_back((c % 10) * (1 - c / 10) + ((c / 10) * 10));
             tmp[r] = 0;
         }
-        else{i--;}
+        else
+        {
+            i--;
+        }
     }
 }
 

@@ -1,19 +1,5 @@
 #include "Dealer.hpp"
 
-void Dealer::updateHand()
-{
-    hand = 0;
-    bool ace;
-    for(unsigned short i = 0; i <= cards.size(); i++)
-    {
-        hand += cards[i];
-        if (cards[i] == 0)
-            ace = true;
-    }
-    if (hand <= 11 && ace == true)
-        soft = true;
-}
-
 unsigned short Dealer::getHand()
 {
     return hand;
@@ -24,7 +10,28 @@ unsigned short Dealer::upCard()
     return cards[0];
 }
 
-void Dealer::hit(unsigned short card)
+bool Dealer::hit()
 {
-    cards.push_back(card);
+    return ( (hand < 17) || ( (hand == 17) && (soft) && (softhit) ) );
+}
+
+void Dealer::newCard(unsigned short c)
+{
+    cards.push_back(c);
+    hand += c;
+    if ( (c == 1) && (hand <= 11) )
+    {
+        soft = true;
+        hand += 10;
+    }
+    if ( (hand > 21) && (soft) )
+    {
+        soft = false;
+        hand -= 10;
+    }
+}
+
+bool Dealer::blackjack()
+{
+    return ( (hand == 21) && (soft) );
 }
