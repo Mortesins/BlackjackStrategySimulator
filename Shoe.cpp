@@ -9,18 +9,20 @@ Shoe::Shoe(unsigned short numberOfDecks, double penetration)
 
 void Shoe::shuffle()
 {
-    unsigned short tmp[13];
-    for (unsigned short i=0; i<13; ++i)
-        tmp[i] = 4 * numberOfDecks;
+    unsigned short tmp[13 * 4 * numberOfDecks];
+    for (unsigned short i=0; i < 13*4*numberOfDecks; ++i)
+        tmp[i] = 1 + (13 % i) ;
     srand(time(0));
     unsigned short r;
+    unsigned short c;
     for (unsigned short i=0; i < 52*numberOfDecks; ++i)
     {
-        r = rand() % 13;
-        if (tmp[r] > 0)
+        r = rand() % 13 * 4 * numberOfDecks;
+        c = tmp[r];
+        if (c > 0)
         {
-            cards.push_back(((r+1) % 10) * (1 - (r+1) / 10) + ((r+1) / 10) * 10);
-            tmp[r]--;
+            cards.push_back((c % 10) * (1 - c / 10) + ((c / 10) * 10));
+            tmp[r] = 0;
         }
         else{i--;}
     }
