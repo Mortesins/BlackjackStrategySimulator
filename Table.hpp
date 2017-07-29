@@ -9,6 +9,7 @@ using namespace std;
 #include "Shoe.hpp"
 #include "Dealer.hpp"
 #include "Rules.hpp"
+#include "CountingSystem.hpp"
 
 class Table
 {
@@ -17,8 +18,10 @@ class Table
     Dealer dealer;
     Shoe shoe;
     Rules* rules;
+    CountingSystem* countingSystem;
     int runningCount;
     unsigned betSize;
+    bool americanDealer;
     
     bool playersInPlay();
     void placeBets();
@@ -30,6 +33,7 @@ class Table
     
     double trueCount();
     bool isMultipleOfBetSize(unsigned bet);
+    unsigned short getCard();
   public:
     Table();
     

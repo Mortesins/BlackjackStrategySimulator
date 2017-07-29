@@ -1,1 +1,1 @@
-#include "${a}.hpp"
+#include "Rules.hpp"

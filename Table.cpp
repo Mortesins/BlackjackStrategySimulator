@@ -5,6 +5,7 @@ Table::Table()
 {
    players.push_back(PlayerSeat());
    rules = new Rules();
+   countingSystem = new CountingSystem();
 }
 
 bool Table::playersInPlay()
@@ -66,7 +67,14 @@ double Table::trueCount()
 bool Table::isMultipleOfBetSize(unsigned bet)
 {
     return ( (bet % betSize) == 0 );
-}    
+}
+
+unsigned short Table::getCard()
+{
+    unsigned short card = shoe.getCard();
+    runningCount += countingSystem->cardValue(card);
+    return card;
+}
 
 void Table::playRound()
 {
