@@ -36,7 +36,30 @@ void Table::placeBets()
 
 void Table::distributeCards()
 {
-
+    // cards is vector < vector <unsigned short> >, at the end of the round is emptied
+        // so I need to add an empty "vector <unsigned short>" to which i will give the cards
+    /*** add empty vector and give first card ***/
+    vector <unsigned short> tmp;
+    for (unsigned i = 0; i < players.size(); i++)
+    {
+        players[i].cards.push_back(tmp);
+        players[i].cards[0].push_back(getCard());
+    }
+    /********************************************/
+    
+    // give card to dealer
+    dealer.newCard(getCard());
+    
+    /*** give second card ***/
+    for (unsigned i = 0; i < players.size(); i++)
+    {
+        players[i].cards[0].push_back(getCard());
+    }
+    /************************/
+    
+    // give second hole card to american dealer without counting it
+    if (americanDealer)
+        dealer.newCard(getCard(false));
 }
 
 void Table::playersPlay()
@@ -69,10 +92,11 @@ bool Table::isMultipleOfBetSize(unsigned bet)
     return ( (bet % betSize) == 0 );
 }
 
-unsigned short Table::getCard()
-{
+unsigned short Table::getCard(bool countCard)
+{ // no counting when giving second hole card to american dealer
     unsigned short card = shoe.getCard();
-    runningCount += countingSystem->cardValue(card);
+    if (countCard)
+        runningCount += countingSystem->cardValue(card);
     return card;
 }
 

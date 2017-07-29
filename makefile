@@ -1,3 +1,2 @@
 clean:
-	rm *.o
-	rm *.gch
+	rm *.o *.gch

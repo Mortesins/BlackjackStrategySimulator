@@ -33,7 +33,7 @@ class Table
     
     double trueCount();
     bool isMultipleOfBetSize(unsigned bet);
-    unsigned short getCard();
+    unsigned short getCard(bool countCard = true);
   public:
     Table();
     
