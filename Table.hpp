@@ -17,6 +17,8 @@ class Table
     Dealer dealer;
     Shoe shoe;
     Rules* rules;
+    int runningCount;
+    unsigned betSize;
     
     bool playersInPlay();
     void placeBets();
@@ -25,6 +27,9 @@ class Table
     void playerPlay(unsigned playerIndex);
     void dealerPlay();
     void giveCollectMoney();
+    
+    double trueCount();
+    bool isMultipleOfBetSize(unsigned bet);
   public:
     Table();
     

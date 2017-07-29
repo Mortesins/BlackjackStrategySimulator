@@ -19,6 +19,7 @@ class Shoe
     Shoe(unsigned short numberOfDecks, double penetration);
     void shuffle();
     unsigned short getCard();
+    double decksRemaining();
     bool isFinished();
 };
 

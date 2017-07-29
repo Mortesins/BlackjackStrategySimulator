@@ -3,8 +3,7 @@
 Table::Table()
     : dealer(false),shoe(6,0.3)
 {
-   players.push_back(PlayerSeat()); 
-   players.push_back(PlayerSeat()); 
+   players.push_back(PlayerSeat());
    rules = new Rules();
 }
 
@@ -22,7 +21,16 @@ bool Table::playersInPlay()
 
 void Table::placeBets()
 {
-
+    double trueCount = this->trueCount();
+    unsigned bet;
+    for (unsigned i = 0; i < players.size(); i++)
+    {
+        bet = players[i].player->getBet(trueCount);
+        if (isMultipleOfBetSize(bet))
+            players[i].pot[0] = bet;
+        else
+            throw "Table::placeBet: bet not multiple of betSize";
+    }
 }
 
 void Table::distributeCards()
@@ -50,6 +58,15 @@ void Table::giveCollectMoney()
 
 }
 
+double Table::trueCount()
+{
+    return runningCount / shoe.decksRemaining();
+}
+
+bool Table::isMultipleOfBetSize(unsigned bet)
+{
+    return ( (bet % betSize) == 0 );
+}    
 
 void Table::playRound()
 {
