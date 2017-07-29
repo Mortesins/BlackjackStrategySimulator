@@ -136,12 +136,12 @@ PlayingStrategy::PlayingStrategy()
     /****************/
 }
 
-char PlayingStrategy::getPlay(const vector <unsigned short>& cards, char dealerHand, vector <char> actionsNotAllowed) const
+char PlayingStrategy::getPlay(const vector <unsigned short>& cards, unsigned short dealerUpCard, vector <char> actionsNotAllowed) const
 {
     // order in which I check the actions depends on "orderOfActions"
     char action;
     char play = '\0';
-    vector <unsigned short> coord = getCoordinates(cards,dealerHand);
+    vector <unsigned short> coord = getCoordinates(cards,dealerUpCard);
     
     unsigned i = 0; 
     while (i < 4 && play == '\0')
@@ -196,15 +196,15 @@ char PlayingStrategy::getPlay(const vector <unsigned short>& cards, char dealerH
     return play;
 }
 
-char PlayingStrategy::getPlay(const vector <unsigned short>& cards, char dealerHand) const
+char PlayingStrategy::getPlay(const vector <unsigned short>& cards, unsigned short dealerUpCard) const
 {
     vector <char> tmp;
-    return getPlay(cards,dealerHand,tmp);
+    return getPlay(cards,dealerUpCard,tmp);
 }
 
-vector <unsigned short> PlayingStrategy::getCoordinates(const vector <unsigned short>& cards, char dealerHand) const
+vector <unsigned short> PlayingStrategy::getCoordinates(const vector <unsigned short>& cards, unsigned short dealerUpCard) const
 {
-    // first element row == player hand, second element column == dealerHand
+    // first element row == player hand, second element column == dealerUpCard
     vector <unsigned short> coord;
     unsigned row = 0;
     /*** player hand ***/
@@ -276,12 +276,10 @@ vector <unsigned short> PlayingStrategy::getCoordinates(const vector <unsigned s
     coord.push_back(row);
     /*******************/
     /*** dealer hand ***/
-    if (tolower(dealerHand) == 'a')
+    if (dealerUpCard == 1) // ace
         coord.push_back(9); //last column
-    else if (dealerHand == '0')
-        coord.push_back(8); // '0' is actually a 10 or J or Q or K
     else    
-        coord.push_back( (dealerHand-'0') - 2 ); // 2 is first column so 0
+        coord.push_back(dealerUpCard - 2 ); // 2 is first column so 0
     /*******************/
     
     return coord;

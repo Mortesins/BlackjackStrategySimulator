@@ -18,7 +18,7 @@ Strategy::Strategy()
     playingStrategies.push_back(tmp); // same playing strategy for all levels
 }
 
-char Strategy::getPlay(double trueCount, const vector <unsigned short>& cards, char dealerHand, vector <char> actionsNotAllowed, unsigned budget, unsigned bet) const
+char Strategy::getPlay(double trueCount, const vector <unsigned short>& cards, unsigned short dealerUpCard, vector <char> actionsNotAllowed, unsigned budget, unsigned bet) const
 {       
         // actions not allowed passed as parameter should be filled based on Rules
         // this method then adds actions not allowed by budget, as dictated by StopStrategy methods (canSplit, canDouble)
@@ -38,10 +38,10 @@ char Strategy::getPlay(double trueCount, const vector <unsigned short>& cards, c
     else if (!stopStrategy.canSplit(budget,bet))
         actionsNotAllowed.push_back('P');
         
-    return playingStrategies[i]->getPlay(cards,dealerHand,actionsNotAllowed);
+    return playingStrategies[i]->getPlay(cards,dealerUpCard,actionsNotAllowed);
 }
 
-char Strategy::getPlay(double trueCount, const vector <unsigned short>& cards, char dealerHand) const
+char Strategy::getPlay(double trueCount, const vector <unsigned short>& cards, unsigned short dealerUpCard) const
 {
     unsigned i = 0;
     bool found = false;
@@ -53,7 +53,7 @@ char Strategy::getPlay(double trueCount, const vector <unsigned short>& cards, c
         else
             found = true;
     }
-    return playingStrategies[i]->getPlay(cards,dealerHand);
+    return playingStrategies[i]->getPlay(cards,dealerUpCard);
 }
 
 
@@ -72,11 +72,11 @@ int main()
     //cards.push_back(1);
     //cards.push_back(4);
     //cards.push_back(2);
-    //char dealerHand = '5';
+    //unsigned short dealerUpCard = '5';
     //actionsNotAllowed.push_back('D');
-    //vector <unsigned short> coord = a.getCoordinates(cards,dealerHand);
+    //vector <unsigned short> coord = a.getCoordinates(cards,dealerUpCard);
     //cout << "(" << coord[0] << "," << coord[1] << ")" << endl;
-    //cout << a.getPlay(cards,dealerHand,actionsNotAllowed) << endl;
+    //cout << a.getPlay(cards,dealerUpCard,actionsNotAllowed) << endl;
     /****************************/
     
     //Strategy* mult = new StrategyMultiplier();
