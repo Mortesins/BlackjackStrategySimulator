@@ -64,7 +64,10 @@ void Table::distributeCards()
 
 void Table::playersPlay()
 {
-
+    for (unsigned i = 0; i < players.size(); i++)
+    {
+        playerPlay(i);
+    }
 }
 
 void Table::playerPlay(unsigned playerIndex)
