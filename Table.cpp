@@ -72,7 +72,65 @@ void Table::playersPlay()
 
 void Table::playerPlay(unsigned playerIndex)
 {
+    bool playerBust = false;
+    unsigned tc = this->trueCount();
+    unsigned short dealerUpCard = dealer.upCard();
+    // call getPlay (should give actionsAllowed here based on Rules)
+    char play = players[playerIndex].player->getPlay(tc,dealerUpCard);
+    switch(play)
+    {
+        /*** needs implementation 
+        case 'R':
+            // needs implementation
+            break;
+        ***/
+        case 'P':
+            split(playerIndex);
+            break;
+        case 'D':
+            doubleDown(playerIndex);
+            break;
+        case 'H':
+            players[playerIndex].cards[0].push_back(getCard());
+            playerBust = checkPlayerBust(playerIndex);
+            if (playerBust)
+                return;
+            break;
+        case 'S':
+            return;
+    }
+}
 
+void Table::split(unsigned playerIndex)
+{
+    
+}    
+
+void Table::doubleDown(unsigned playerIndex)
+{
+    
+}
+
+bool Table::checkPlayerBust(unsigned playerIndex, unsigned handIndex)
+{   // hand index choses on which hand to calculate the value (there can be more hands if split)
+    unsigned handValue = 0;
+    for (unsigned i = 0; i < players[playerIndex].cards[handIndex].size(); i++)
+    {
+        handValue += players[playerIndex].cards[handIndex][i];
+    }
+    if (handValue > 21)
+    {   //bust
+        /*** empty cards ***/
+        while (players[playerIndex].cards[handIndex].size() > 0) 
+        {
+            handValue += players[playerIndex].cards[handIndex].pop_back();
+        }
+        /*******************/
+        // remove money from pot
+        players[playerIndex].pot[handIndex] = 0;
+        return true;
+    }
+    return false;
 }
 
 void Table::dealerPlay()

@@ -28,6 +28,9 @@ class Table
     void distributeCards();
     void playersPlay();
     void playerPlay(unsigned playerIndex);
+    void split(unsigned playerIndex);
+    void doubleDown(unsigned playerIndex);
+    bool checkPlayerBust(unsigned playerIndex, unsigned handIndex = 0);
     void dealerPlay();
     void giveCollectMoney();
     
