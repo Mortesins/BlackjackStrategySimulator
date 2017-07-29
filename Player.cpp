@@ -13,7 +13,7 @@ unsigned Player::getBet(double trueCount)
 
 }
 
-char Player::getPlay(double trueCount, char dealerHand)
+char Player::getPlay(double trueCount, unsigned short dealerUpCard)
 {
     
 }

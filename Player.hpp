@@ -23,7 +23,7 @@ class Player
     
     
     unsigned getBet(double trueCount);
-    char getPlay(double trueCount, char dealerHand);
+    char getPlay(double trueCount, unsigned short dealerUpCard);
     unsigned getInsurance(double trueCount);
 
     int inPlay();
