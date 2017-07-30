@@ -17,6 +17,7 @@ class Dealer
     Dealer(bool softhit);
     unsigned short getHand();
     unsigned short upCard();
+    unsigned short holeCard(); //for american dealer
     bool hit();
     void newCard(unsigned short c);
     bool blackjack();

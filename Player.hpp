@@ -26,7 +26,7 @@ class Player
     char getPlay(double trueCount, unsigned short dealerUpCard);
     char getPlay(double trueCount, unsigned short dealerUpCard, vector <char> actionsNotAllowed);
     unsigned getInsurance(double trueCount);
-    unsigned getMoney(unsigned money);
+    unsigned payMoney(unsigned money);
 
     int inPlay();
     

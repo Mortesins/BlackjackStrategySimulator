@@ -26,12 +26,14 @@ class Table
     bool playersInPlay();
     void placeBets();
     void distributeCards();
+    void insurance();
     void playersPlay();
     void playerPlay(unsigned playerIndex, unsigned handIndex = 0);
     void split(unsigned playerIndex, unsigned handIndex = 0);
     void doubleDown(unsigned playerIndex, unsigned handIndex = 0);
     bool checkPlayerBust(unsigned playerIndex, unsigned handIndex = 0);
     void dealerPlay();
+    void checkDealerBlackjack();
     void giveCollectMoney();
     
     double trueCount();

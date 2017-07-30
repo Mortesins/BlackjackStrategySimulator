@@ -62,6 +62,15 @@ void Table::distributeCards()
         dealer.newCard(getCard(false));
 }
 
+void Table::insurance()
+{
+    double tc = trueCount();
+    for (unsigned i = 0; i < players.size(); i++)
+    {
+        players[i].insurance = players[i].player->getInsurance(tc);
+    }
+}
+
 void Table::playersPlay()
 {
     for (unsigned i = 0; i < players.size(); i++)
@@ -84,7 +93,7 @@ void Table::playerPlay(unsigned playerIndex, unsigned handIndex)
     char play;
     while (play != 'S') // until player stands
     {
-        tc = this->trueCount();
+        tc = trueCount();
         // call getPlay (should give actionsAllowed here based on Rules)
         play = players[playerIndex].player->getPlay(tc,dealerUpCard); //hand index
         switch(play)
@@ -115,7 +124,7 @@ void Table::playerPlay(unsigned playerIndex, unsigned handIndex)
 void Table::split(unsigned playerIndex, unsigned handIndex)
 {
     // money for new cards, has to be same size as pot    
-    unsigned money = players[playerIndex].player->getMoney(players[playerIndex].pot[handIndex]);
+    unsigned money = players[playerIndex].player->payMoney(players[playerIndex].pot[handIndex]);
     // put money in the newPot
     vector <unsigned>::iterator it_pot = players[playerIndex].pot.begin();
     players[playerIndex].pot.insert(it_pot+handIndex+1,money);
@@ -137,7 +146,7 @@ void Table::split(unsigned playerIndex, unsigned handIndex)
 void Table::doubleDown(unsigned playerIndex, unsigned handIndex)
 {
     // double the money, so player has to put what is in the pot
-    unsigned money = players[playerIndex].player->getMoney(players[playerIndex].pot[handIndex]);
+    unsigned money = players[playerIndex].player->payMoney(players[playerIndex].pot[handIndex]);
     players[playerIndex].pot[handIndex] += money; 
     // give card
     players[playerIndex].cards[handIndex].push_back(getCard());
@@ -171,9 +180,17 @@ unsigned Table::handValue(unsigned playerIndex, unsigned handIndex)
     }
     return handValue;
 }
+
 void Table::dealerPlay()
 {
-
+    if (americanDealer) // add hole card to running count
+    {
+        runningCount += countingSystem->cardValue(dealer.holeCard());
+    }
+    while (dealer.hit())
+    {
+        dealer.newCard(getCard());
+    }
 }
 
 void Table::giveCollectMoney()
@@ -199,14 +216,46 @@ unsigned short Table::getCard(bool countCard)
     return card;
 }
 
+void Table::checkDealerBlackjack()
+{
+    if (dealer.blackjack())
+    {
+        for (unsigned i = 0; i < players.size(); i++)
+        {
+            // remove all bets of all pots (there are more pots if split)
+            while (players[i].pot.size() > 0) 
+            {
+                players[i].pot.pop_back();
+            }
+            // payout insurance, note if player no insurance then 0*3 = 0
+            players[i].player->receiveMoney(players[i].insurance*3);
+            // remove insurance
+            players[i].insurance = 0;
+        }
+    }
+    else
+    {
+        //remove insurance
+        for (unsigned i = 0; i < players.size(); i++)
+        {
+            players[i].insurance = 0;
+        }
+    }
+}
+
 void Table::playRound()
 {
     if (playersInPlay())
     {
         placeBets();
         distributeCards();
+        insurance();
+        if (americanDealer)
+            checkDealerBlackjack();
         playersPlay();
         dealerPlay();
+        if (!americanDealer)
+            checkDealerBlackjack();
         giveCollectMoney();
     }
     else
