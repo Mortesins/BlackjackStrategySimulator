@@ -66,64 +66,93 @@ void Table::playersPlay()
 {
     for (unsigned i = 0; i < players.size(); i++)
     {
-        playerPlay(i);
+        for (unsigned handIndex = 0; handIndex < players[i].cards.size(); handIndex++)
+        {   // for each hand, NOTE: cards.size() should be changed by playerPlay when split
+            playerPlay(i,handIndex);
+        }
     }
 }
 
-void Table::playerPlay(unsigned playerIndex)
-{
-    bool playerBust = false;
-    unsigned tc = this->trueCount();
+void Table::playerPlay(unsigned playerIndex, unsigned handIndex)
+{   // plays handIndex, if split continues to play the first hand of the split, which has same handIndex
     unsigned short dealerUpCard = dealer.upCard();
-    // call getPlay (should give actionsAllowed here based on Rules)
-    char play = players[playerIndex].player->getPlay(tc,dealerUpCard);
-    switch(play)
+    
+    bool playerBust;
+    unsigned tc;
+    
+    
+    char play;
+    while (play != 'S') // until player stands
     {
-        /*** needs implementation 
-        case 'R':
-            // needs implementation
-            break;
-        ***/
-        case 'P':
-            split(playerIndex);
-            break;
-        case 'D':
-            doubleDown(playerIndex);
-            break;
-        case 'H':
-            players[playerIndex].cards[0].push_back(getCard());
-            playerBust = checkPlayerBust(playerIndex);
-            if (playerBust)
-                return;
-            break;
-        case 'S':
-            return;
+        tc = this->trueCount();
+        // call getPlay (should give actionsAllowed here based on Rules)
+        play = players[playerIndex].player->getPlay(tc,dealerUpCard); //hand index
+        switch(play)
+        {
+            /*** needs implementation 
+            case 'R':
+                // needs implementation
+                break;
+            ***/
+            case 'P':
+                split(playerIndex,handIndex);
+                break; // continues play on the same handIndex
+            case 'D':
+                doubleDown(playerIndex,handIndex);
+                return; // player bust checked inside double down, and even if not bust the play ends here
+            case 'H':
+                players[playerIndex].cards[handIndex].push_back(getCard());
+                playerBust = checkPlayerBust(playerIndex,handIndex);
+                if (playerBust)
+                    return;
+                break;
+            default:
+                break;
+        }
     }
 }
 
-void Table::split(unsigned playerIndex)
+void Table::split(unsigned playerIndex, unsigned handIndex)
 {
+    // money for new cards, has to be same size as pot    
+    unsigned money = players[playerIndex].player->getMoney(players[playerIndex].pot[handIndex]);
+    // put money in the newPot
+    vector <unsigned>::iterator it_pot = players[playerIndex].pot.begin();
+    players[playerIndex].pot.insert(it_pot+handIndex+1,money);
+    // create new hand with the second card of first hand
+    vector <unsigned short> newHand;
+    // put second card of first hand in the newHand
+    newHand.push_back(players[playerIndex].cards[handIndex][1]);
+    // remove card, since there are two cards, pop_back removes [1]
+    players[playerIndex].cards[handIndex].pop_back();
+    // add newHand to hands
+    vector <vector <unsigned short> >::iterator it_cards = players[playerIndex].cards.begin();
+    players[playerIndex].cards.insert(it_cards+handIndex+1,newHand);
     
+    // give a card to the two new hands
+    players[playerIndex].cards[handIndex].push_back(getCard());
+    players[playerIndex].cards[handIndex+1].push_back(getCard());
 }    
 
-void Table::doubleDown(unsigned playerIndex)
+void Table::doubleDown(unsigned playerIndex, unsigned handIndex)
 {
-    
+    // double the money, so player has to put what is in the pot
+    unsigned money = players[playerIndex].player->getMoney(players[playerIndex].pot[handIndex]);
+    players[playerIndex].pot[handIndex] += money; 
+    // give card
+    players[playerIndex].cards[handIndex].push_back(getCard());
+    // check if player bust    
+    checkPlayerBust(playerIndex);
 }
 
 bool Table::checkPlayerBust(unsigned playerIndex, unsigned handIndex)
 {   // hand index choses on which hand to calculate the value (there can be more hands if split)
-    unsigned handValue = 0;
-    for (unsigned i = 0; i < players[playerIndex].cards[handIndex].size(); i++)
-    {
-        handValue += players[playerIndex].cards[handIndex][i];
-    }
-    if (handValue > 21)
+    if (handValue(playerIndex,handIndex) > 21)
     {   //bust
         /*** empty cards ***/
         while (players[playerIndex].cards[handIndex].size() > 0) 
         {
-            handValue += players[playerIndex].cards[handIndex].pop_back();
+            players[playerIndex].cards[handIndex].pop_back();
         }
         /*******************/
         // remove money from pot
@@ -133,6 +162,15 @@ bool Table::checkPlayerBust(unsigned playerIndex, unsigned handIndex)
     return false;
 }
 
+unsigned Table::handValue(unsigned playerIndex, unsigned handIndex)
+{   // hand index choses on which hand to calculate the value (there can be more hands if split)
+    unsigned handValue = 0;
+    for (unsigned i = 0; i < players[playerIndex].cards[handIndex].size(); i++)
+    {
+        handValue += players[playerIndex].cards[handIndex][i];
+    }
+    return handValue;
+}
 void Table::dealerPlay()
 {
 

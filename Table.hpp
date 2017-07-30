@@ -27,9 +27,9 @@ class Table
     void placeBets();
     void distributeCards();
     void playersPlay();
-    void playerPlay(unsigned playerIndex);
-    void split(unsigned playerIndex);
-    void doubleDown(unsigned playerIndex);
+    void playerPlay(unsigned playerIndex, unsigned handIndex = 0);
+    void split(unsigned playerIndex, unsigned handIndex = 0);
+    void doubleDown(unsigned playerIndex, unsigned handIndex = 0);
     bool checkPlayerBust(unsigned playerIndex, unsigned handIndex = 0);
     void dealerPlay();
     void giveCollectMoney();
@@ -37,6 +37,7 @@ class Table
     double trueCount();
     bool isMultipleOfBetSize(unsigned bet);
     unsigned short getCard(bool countCard = true);
+    unsigned handValue(unsigned playerIndex, unsigned handIndex);
   public:
     Table();
     
