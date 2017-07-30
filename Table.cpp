@@ -185,24 +185,61 @@ void Table::dealerPlay()
 
 void Table::giveCollectMoney()
 {
-    // if dealer bust 
-        // pay everyone
+    unsigned sum;
+    unsigned dealerHand = dealer.getHand();
+    // if dealer bust
+    if (dealerHand > 21)
+    {    // pay everyone
+        for (unsigned i = 0; i < players.size(); i++)
+        {
+            sum = 0;
             // sum all pots
+            for (unsigned j = 0; j < players[i].pot.size(); j++)
+            {
+                sum += players[i].pot[j]; //if player bust pot = 0
+            }
             // reset all pots
-            // give the sum*2 to the player 
-    // else
-        // for each player
-            // for each hand
+            while (players[i].pot.size() > 0) 
+            {
+                players[i].pot.pop_back();
+            }
+            // give the sum*2 to the player
+            players[i].player->receiveMoney(sum*2);
+        }
+    }
+    else
+    { // else
+        for (unsigned playerIndex = 0; playerIndex < players.size(); playerIndex++)
+        {   // for each player
+            for (unsigned handIndex = 0; handIndex < players[playerIndex].cards.size(); handIndex++)
+            {   // for each hand
                 // if blackjack
-                    // pay player 3:2
-                // else
+                if (blackjack(playerIndex,handIndex))
+                {
+                    // pay player 3:2, NOTE: BJ vs BJ already taken care
+                    players[playerIndex].player->receiveMoney( (unsigned)(players[playerIndex].pot[handIndex]*2.5) );
+                    // remove pot money
+                    players[playerIndex].pot.erase(players[playerIndex].pot.begin()+handIndex);
+                }
+                else
+                {    // else
                     // if handValue > dealerHand
+                    if (handValue(playerIndex,handIndex) > dealerHand)
+                    {
                         // pay player
-                    // else if handValue == dealerHand
+                        players[playerIndex].player->receiveMoney(players[playerIndex].pot[handIndex]*2);
+                    }
+                    else if (handValue(playerIndex,handIndex) == dealerHand)
+                    {   // else if handValue == dealerHand
                         // give back money
-                    // else
-                        // remove money from pot
-
+                        players[playerIndex].player->receiveMoney(players[playerIndex].pot[handIndex]);
+                    }
+                    // remove money from pot, either because lost but even reset after win
+                    players[playerIndex].pot.erase(players[playerIndex].pot.begin()+handIndex);
+                }
+            }
+        }
+    }
 }
 
 double Table::trueCount()
@@ -247,7 +284,17 @@ void Table::checkDealerBlackjack()
     {
         for (unsigned i = 0; i < players.size(); i++)
         {
-            // remove all bets of all pots (there are more pots if split)
+            // check if player has hand with blackjack
+            for (unsigned j = 0; j < players[i].cards.size(); j++)
+            {
+                if (blackjack(i,j))
+                {   // draw, give back pot money. NOTE: Rules should check if BJvsBJ is a draw
+                    players[i].player->receiveMoney(players[i].pot[j]);
+                    // remove pot money
+                    players[i].pot.erase(players[i].pot.begin()+j);
+                }
+            }
+            // remove all remaining (no blackjack) bets of all pots (there are more pots if split)
             while (players[i].pot.size() > 0) 
             {
                 players[i].pot.pop_back();
