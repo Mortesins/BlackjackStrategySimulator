@@ -40,6 +40,7 @@ class Table
     bool isMultipleOfBetSize(unsigned bet);
     unsigned short getCard(bool countCard = true);
     unsigned handValue(unsigned playerIndex, unsigned handIndex);
+    bool blackjack(unsigned playerIndex, unsigned handIndex);
   public:
     Table();
     

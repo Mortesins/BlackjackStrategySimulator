@@ -171,16 +171,6 @@ bool Table::checkPlayerBust(unsigned playerIndex, unsigned handIndex)
     return false;
 }
 
-unsigned Table::handValue(unsigned playerIndex, unsigned handIndex)
-{   // hand index choses on which hand to calculate the value (there can be more hands if split)
-    unsigned handValue = 0;
-    for (unsigned i = 0; i < players[playerIndex].cards[handIndex].size(); i++)
-    {
-        handValue += players[playerIndex].cards[handIndex][i];
-    }
-    return handValue;
-}
-
 void Table::dealerPlay()
 {
     if (americanDealer) // add hole card to running count
@@ -195,6 +185,23 @@ void Table::dealerPlay()
 
 void Table::giveCollectMoney()
 {
+    // if dealer bust 
+        // pay everyone
+            // sum all pots
+            // reset all pots
+            // give the sum*2 to the player 
+    // else
+        // for each player
+            // for each hand
+                // if blackjack
+                    // pay player 3:2
+                // else
+                    // if handValue > dealerHand
+                        // pay player
+                    // else if handValue == dealerHand
+                        // give back money
+                    // else
+                        // remove money from pot
 
 }
 
@@ -214,6 +221,24 @@ unsigned short Table::getCard(bool countCard)
     if (countCard)
         runningCount += countingSystem->cardValue(card);
     return card;
+}
+
+unsigned Table::handValue(unsigned playerIndex, unsigned handIndex)
+{   // hand index choses on which hand to calculate the value (there can be more hands if split)
+    unsigned handValue = 0;
+    for (unsigned i = 0; i < players[playerIndex].cards[handIndex].size(); i++)
+    {
+        handValue += players[playerIndex].cards[handIndex][i];
+    }
+    return handValue;
+}
+
+bool Table::blackjack(unsigned playerIndex, unsigned handIndex)
+{   // only possibility is [1,10] or [10,1]
+    return ( 
+              (  (players[playerIndex].cards[handIndex][0] == 1) && (players[playerIndex].cards[handIndex][1] == 10)  ) || 
+              (  (players[playerIndex].cards[handIndex][0] == 10) && (players[playerIndex].cards[handIndex][1] == 1)  )
+           );
 }
 
 void Table::checkDealerBlackjack()
