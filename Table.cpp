@@ -95,7 +95,7 @@ void Table::playerPlay(unsigned playerIndex, unsigned handIndex)
     {
         tc = trueCount();
         // call getPlay (should give actionsAllowed here based on Rules)
-        play = players[playerIndex].player->getPlay(tc,dealerUpCard); //hand index
+        play = players[playerIndex].player->getPlay(tc,dealerUpCard,handIndex); //hand index
         switch(play)
         {
             /*** needs implementation 
