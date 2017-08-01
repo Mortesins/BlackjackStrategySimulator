@@ -10,28 +10,48 @@ Player::Player(const vector < vector <unsigned short> > & c)
 
 unsigned Player::getBet(double trueCount)
 {
-
+    bet = strategy.getBet();
 }
 
-char Player::getPlay(double trueCount, unsigned short dealerUpCard)
+char Player::getPlay(double trueCount, unsigned short dealerUpCard, unsigned handIndex)     //dummy function, will be removed after Rules are implemented
 {
-    
+    vector <char> actionsNotAllowed;
+    return getPlay(trueCount, dealerUpCard, handIndex, actionsNotAllowed);
 }
 
+char Player::getPlay(double trueCount, unsigned short dealerUpCard, unsigned handIndex, vector <char> actionsNotAllowed);
+{
+    return strategy.getPlay(trueCount, dealerUpCard, handIndex, actionsNotAllowed);
+}
+
+/*
 unsigned Player::getInsurance(double trueCount)
 {
     
 }
+*/
+
+void Player::payMoney(unsigned m)
+{
+    money -= m;
+}
 
 int Player::inPlay()
 {
-    
+    if (cards.length() == 0 && money < 2)
+        return -1;
+//  if (strategy.getBet() == 0)     /*disabled to keep playing and use up cards*/
+//      return 0;
+    else
+        return 1;
 }
 
-void Player::receiveMoney(unsigned money)
+void Player::receiveMoney(unsigned m)
 {
-    
+    money += m;
 }
+
+
 
 /*** PRINTOUT CARDS ***\
 #include <iostream>

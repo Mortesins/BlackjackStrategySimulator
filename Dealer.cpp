@@ -10,6 +10,11 @@ unsigned short Dealer::upCard()
     return cards[0];
 }
 
+unsigned short Dealer::holeCard()
+{
+    return cards[1];
+}
+
 bool Dealer::hit()
 {
     return ( (hand < 17) || ( (hand == 17) && (soft) && (softhit) ) );

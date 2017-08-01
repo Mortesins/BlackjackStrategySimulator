@@ -13,24 +13,24 @@ class Player
   private:
     const string name;
     unsigned money;
-    const vector <vector <unsigned short> > & cards; 
+    const vector <vector <unsigned short> > & cards;
     Strategy* strategy;
   public:
-    Player(const vector < vector <unsigned short> > & c);
+    Player(const vector < vector <unsigned short> > & c, string n);
 /*** PRINTOUT CARDS ***\
     void prova();
 \**********************/
     
     
     unsigned getBet(double trueCount);
-    char getPlay(double trueCount, unsigned short dealerUpCard);
-    char getPlay(double trueCount, unsigned short dealerUpCard, vector <char> actionsNotAllowed);
-    unsigned getInsurance(double trueCount);
-    unsigned payMoney(unsigned money);
+    char getPlay(double trueCount, unsigned short dealerUpCard, unsigned handIndex);
+    char getPlay(double trueCount, unsigned short dealerUpCard, unsigned handIndex, vector <char> actionsNotAllowed);
+//  unsigned getInsurance(double trueCount);
+    unsigned payMoney(unsigned m);
 
     int inPlay();
     
-    void receiveMoney(unsigned money);
+    void receiveMoney(unsigned m);
 };
 
 #endif

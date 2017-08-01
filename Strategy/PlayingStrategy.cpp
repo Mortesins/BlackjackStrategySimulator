@@ -196,7 +196,7 @@ char PlayingStrategy::getPlay(const vector <unsigned short>& cards, unsigned sho
     return play;
 }
 
-char PlayingStrategy::getPlay(const vector <unsigned short>& cards, unsigned short dealerUpCard) const
+char PlayingStrategy::getPlay(const vector <unsigned short>& cards, unsigned short dealerUpCard) const  //redundant 
 {
     vector <char> tmp;
     return getPlay(cards,dealerUpCard,tmp);
