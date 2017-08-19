@@ -20,7 +20,7 @@ StrategySequence::StrategySequence()
     bettingStrategies[2][4] = 12;
 }
 
-unsigned StrategySequence::getBet(double trueCount, unsigned budget, unsigned consecutiveLosses)
+unsigned StrategySequence::getBet(double trueCount, unsigned budget, int streak)
 {
     /*** I have to find TC interval ***/
         // i will be TC interval index
@@ -57,5 +57,5 @@ unsigned StrategySequence::getBet(double trueCount, unsigned budget, unsigned co
     else // example: 5 time in interval, but that interval has 3 bets, so I choose the last bet (third bet)
         betIndex = bettingStrategies[i].size() - 1;
     /******************************************************/
-    return this->stopStrategy.canPlaceBet(budget,bettingStrategies[i][betIndex],consecutiveLosses);
+    return this->stopStrategy.canPlaceBet(budget,bettingStrategies[i][betIndex],consecutiveLosses(streak));
 }

@@ -14,7 +14,7 @@ class StrategyMultiplier
     vector <double> multipliers;
   public:
     StrategyMultiplier();
-    unsigned getBet(double trueCount, unsigned budget, unsigned consecutiveLosses);
+    unsigned getBet(double trueCount, unsigned budget, int streak);
 };
 
 #endif

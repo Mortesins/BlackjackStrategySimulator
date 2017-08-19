@@ -15,7 +15,7 @@ class StrategySequence
     vector <unsigned> levelCounters;
   public:
     StrategySequence();
-    unsigned getBet(double trueCount, unsigned budget, unsigned consecutiveLosses);
+    unsigned getBet(double trueCount, unsigned budget, int streak);
 };
 
 #endif
