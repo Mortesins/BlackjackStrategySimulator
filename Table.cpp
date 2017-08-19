@@ -26,7 +26,7 @@ void Table::placeBets()
     unsigned bet;
     for (unsigned i = 0; i < players.size(); i++)
     {
-        bet = players[i].player->getBet(trueCount);
+        bet = players[i].player->getBet(trueCount,players[i].consecutiveLosses);
         if (isMultipleOfBetSize(bet))
             players[i].pot[0] = bet;
         else
@@ -205,6 +205,8 @@ void Table::giveCollectMoney()
             }
             // give the sum*2 to the player
             players[i].player->receiveMoney(sum*2);
+            // player won so reset consecutiveLosses
+            players[i].consecutiveLosses = 0;
         }
     }
     else
@@ -220,6 +222,8 @@ void Table::giveCollectMoney()
                     players[playerIndex].player->receiveMoney( (unsigned)(players[playerIndex].pot[handIndex]*2.5) );
                     // remove pot money
                     players[playerIndex].pot.erase(players[playerIndex].pot.begin()+handIndex);
+                    // player won so reset consecutiveLosses
+                    players[playerIndex].consecutiveLosses = 0;
                 }
                 else
                 {    // else
@@ -228,11 +232,19 @@ void Table::giveCollectMoney()
                     {
                         // pay player
                         players[playerIndex].player->receiveMoney(players[playerIndex].pot[handIndex]*2);
+                        // player won so reset consecutiveLosses
+                        players[playerIndex].consecutiveLosses = 0;
                     }
                     else if (handValue(playerIndex,handIndex) == dealerHand)
                     {   // else if handValue == dealerHand
                         // give back money
                         players[playerIndex].player->receiveMoney(players[playerIndex].pot[handIndex]);
+                        // consecutiveLosses remain the same
+                    }
+                    else
+                    {   // handValue < dealerHand
+                        // player lost NOTE: having two hands and losing with both counts as 2 losses
+                        players[playerIndex].consecutiveLosses++;
                     }
                     // remove money from pot, either because lost but even reset after win
                     players[playerIndex].pot.erase(players[playerIndex].pot.begin()+handIndex);
@@ -292,6 +304,11 @@ void Table::checkDealerBlackjack()
                     players[i].player->receiveMoney(players[i].pot[j]);
                     // remove pot money
                     players[i].pot.erase(players[i].pot.begin()+j);
+                    // draw so consecutiveLosses remains the same
+                }
+                else
+                {   // no blackjack so player lost. NOTE: having two hands and losing with both counts as 2 losses
+                    players[i].consecutiveLosses++;
                 }
             }
             // remove all remaining (no blackjack) bets of all pots (there are more pots if split)
