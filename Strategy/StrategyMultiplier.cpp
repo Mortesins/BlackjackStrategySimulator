@@ -8,7 +8,7 @@ StrategyMultiplier::StrategyMultiplier()
     multipliers.push_back(2);
 }
 
-unsigned StrategyMultiplier::getBet(double trueCount, unsigned budget, unsigned bet, unsigned consecutiveLosses)
+unsigned StrategyMultiplier::getBet(double trueCount, unsigned budget, unsigned consecutiveLosses)
 {
     unsigned i = 0;
     bool found = false;
@@ -20,5 +20,5 @@ unsigned StrategyMultiplier::getBet(double trueCount, unsigned budget, unsigned 
         else
             found = true;
     }
-    return this->stopStrategy.canPlaceBet(budget,floor(multipliers[i]*bet),consecutiveLosses);
+    return this->stopStrategy.canPlaceBet(budget,floor(multipliers[i]*2),consecutiveLosses);
 }

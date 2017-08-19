@@ -89,6 +89,6 @@ int main()
     cards.push_back(1);
     cards.push_back(2);
     cout << mult->getPlay(1,cards,'5') << endl;
-    cout << mult->getBet(2.1,90,10,1) << endl;
+    cout << mult->getBet(2.1,18,1) << endl;
     return 0;
 }

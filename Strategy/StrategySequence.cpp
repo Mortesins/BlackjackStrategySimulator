@@ -10,14 +10,14 @@ StrategySequence::StrategySequence()
         // only one bet which is zero (so no play while TC < -2)
     bettingStrategies[0][0] = 0;
     // bettingStrategies[1] has vector of bets for -2 < TC < 2
-        // only one bet which is base bet (default 10)
-    bettingStrategies[1][0] = 10;
+        // only one bet which is base bet (default 2)
+    bettingStrategies[1][0] = 2;
     // bettingStrategies[2] has vector of bets for TC < 2
-    bettingStrategies[2][0] = 20;
-    bettingStrategies[2][1] = 30;
-    bettingStrategies[2][2] = 40;
-    bettingStrategies[2][3] = 50;
-    bettingStrategies[2][4] = 60;
+    bettingStrategies[2][0] = 4;
+    bettingStrategies[2][1] = 6;
+    bettingStrategies[2][2] = 8;
+    bettingStrategies[2][3] = 10;
+    bettingStrategies[2][4] = 12;
 }
 
 unsigned StrategySequence::getBet(double trueCount, unsigned budget, unsigned consecutiveLosses)
