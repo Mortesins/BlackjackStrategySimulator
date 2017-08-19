@@ -3,8 +3,24 @@
 PlayerSeat::PlayerSeat()
 {
     player = new Player(cards);
-    consecutiveLosses = 0;
+    streak = 0;
     insurance = 0;
+}
+
+void PlayerSeat::updateStreakWin()
+{
+    if (streak >= 0)
+        streak++;
+    else // streak < 0
+        streak = 1; // so I know I won 1 hand
+}
+
+void PlayerSeat::updateStreakLose()
+{
+    if (streak <= 0)
+        streak--;
+    else // streak > 0
+        streak = -1; // so I know I lost 1 hand
 }
 
 /*** TEST const vector < vector <unsigned short> > & ***/

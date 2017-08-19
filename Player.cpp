@@ -8,9 +8,9 @@ Player::Player(const vector < vector <unsigned short> > & c, string n)
     strategy = new StrategyMultiplier();
 }
 
-unsigned Player::getBet(double trueCount, unsigned consecutiveLosses)
+unsigned Player::getBet(double trueCount, int streak)
 {
-    bet = strategy.getBet(trueCount,money,consecutiveLosses);
+    bet = strategy.getBet(trueCount,money,streak);
 }
 
 char Player::getPlay(double trueCount, unsigned short dealerUpCard, unsigned handIndex)     //dummy function, will be removed after Rules are implemented

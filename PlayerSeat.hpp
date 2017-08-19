@@ -10,12 +10,14 @@ class PlayerSeat
 {
   public:
     unsigned insurance;
-    unsigned consecutiveLosses;
+    int streak; // Wins > 0, Losses < 0
     vector <unsigned> pot;
     vector <vector <unsigned short> > cards;
     Player* player;
     
     PlayerSeat();
+    void updateStreakWin();
+    void updateStreakLose();
 };
 
 #endif
