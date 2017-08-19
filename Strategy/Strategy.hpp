@@ -20,6 +20,7 @@ class Strategy
     unsigned consecutiveLosses(int streak); // convert streak to consecutiveLosses
   public:
     Strategy();
+    bool getInsurance(double trueCount);
     char getPlay(double trueCount, const vector <unsigned short>& cards, unsigned short dealerUpCard, vector <char> actionsNotAllowed, unsigned budget, unsigned bet) const;
     char getPlay(double trueCount, const vector <unsigned short>& cards, unsigned short dealerUpCard) const;
     virtual unsigned getBet(double trueCount, unsigned budget, int streak) = 0;    

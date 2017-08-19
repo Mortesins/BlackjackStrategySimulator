@@ -24,12 +24,13 @@ char Player::getPlay(double trueCount, unsigned short dealerUpCard, unsigned han
     return strategy.getPlay(trueCount, dealerUpCard, handIndex, actionsNotAllowed);
 }
 
-/*
-unsigned Player::getInsurance(double trueCount)
+unsigned Player::getInsurance(double trueCount, unsigned bet)
 {
-    
+    if ( strategy.getInsurance(trueCount) )
+        return bet*0.5; // half of the placed bet
+    else
+        return 0;
 }
-*/
 
 void Player::payMoney(unsigned m)
 {

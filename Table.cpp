@@ -65,9 +65,11 @@ void Table::distributeCards()
 void Table::insurance()
 {
     double tc = trueCount();
+    unsigned bet;
     for (unsigned i = 0; i < players.size(); i++)
     {
-        players[i].insurance = players[i].player->getInsurance(tc);
+        bet = players[i].pot[0];
+        players[i].insurance = players[i].player->getInsurance(tc,bet); //if no insurance it will be 0
     }
 }
 

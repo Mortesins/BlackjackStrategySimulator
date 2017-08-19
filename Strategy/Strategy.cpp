@@ -26,6 +26,11 @@ unsigned Strategy::consecutiveLosses(int streak) // convert streak to consecutiv
         return streak * -1;
 }
 
+bool getInsurance(double trueCount)
+{
+    return trueCount > 3;
+}
+
 char Strategy::getPlay(double trueCount, const vector <unsigned short>& cards, unsigned short dealerUpCard, vector <char> actionsNotAllowed, unsigned budget, unsigned bet) const
 {       
         // actions not allowed passed as parameter should be filled based on Rules
