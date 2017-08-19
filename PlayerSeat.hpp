@@ -10,6 +10,7 @@ class PlayerSeat
 {
   public:
     unsigned insurance;
+    unsigned consecutiveLosses;
     vector <unsigned> pot;
     vector <vector <unsigned short> > cards;
     Player* player;

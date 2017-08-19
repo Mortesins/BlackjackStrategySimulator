@@ -12,8 +12,8 @@ class Player
 {
   private:
     const string name;
-    unsigned money;
     const vector <vector <unsigned short> > & cards;
+    unsigned money;
     Strategy* strategy;
   public:
     Player(const vector < vector <unsigned short> > & c, string n);
@@ -22,7 +22,7 @@ class Player
 \**********************/
     
     
-    unsigned getBet(double trueCount);
+    unsigned getBet(double trueCount, unsigned consecutiveLosses);
     char getPlay(double trueCount, unsigned short dealerUpCard, unsigned handIndex);
     char getPlay(double trueCount, unsigned short dealerUpCard, unsigned handIndex, vector <char> actionsNotAllowed);
 //  unsigned getInsurance(double trueCount);

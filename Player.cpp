@@ -2,15 +2,15 @@
 
 #include "Strategy/StrategyMultiplier.hpp"
 
-Player::Player(const vector < vector <unsigned short> > & c)
-    : name("Test"),cards(c)
+Player::Player(const vector < vector <unsigned short> > & c, string n)
+    : name(n),cards(c)
 {
     strategy = new StrategyMultiplier();
 }
 
-unsigned Player::getBet(double trueCount)
+unsigned Player::getBet(double trueCount, unsigned consecutiveLosses)
 {
-    bet = strategy.getBet();
+    bet = strategy.getBet(trueCount,money,consecutiveLosses);
 }
 
 char Player::getPlay(double trueCount, unsigned short dealerUpCard, unsigned handIndex)     //dummy function, will be removed after Rules are implemented

@@ -3,6 +3,8 @@
 PlayerSeat::PlayerSeat()
 {
     player = new Player(cards);
+    consecutiveLosses = 0;
+    insurance = 0;
 }
 
 /*** TEST const vector < vector <unsigned short> > & ***/
