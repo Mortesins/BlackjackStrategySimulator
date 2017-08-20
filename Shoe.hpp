@@ -11,8 +11,8 @@ using namespace std;
 class Shoe
 {
   private:
-    unsigned short unused;
     unsigned short numberOfDecks;
+    double penetration;
     vector <unsigned short> cards;
 
   public:

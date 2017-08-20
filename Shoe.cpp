@@ -3,22 +3,29 @@
 Shoe::Shoe(unsigned short numberOfDecks, double penetration)
 {
     this->numberOfDecks = numberOfDecks;
-    this->unused = 52 * numberOfDecks * (1-penetration);
+    this->penetration = penetration;
     shuffle();
 }
 
 void Shoe::shuffle()
 {
-    unsigned short tmp[13 * 4 * numberOfDecks];
+    /*** empty deck before refilling it ***/
+    while (cards.size() > 0)
+    {
+        cards.pop_back();
+    }
+    /*** empty deck before refilling it ***/
+    unsigned numberOfCards = 13*4*numberOfDecks;
+    unsigned short tmp[numberOfCards];
     for (unsigned short i=0; i < 13*4*numberOfDecks; ++i)
-        tmp[i] = 1 + (13 % i) ;
+        tmp[i] = 1 + (i % 13);
     srand(time(0));
     unsigned short r;
     unsigned short c;
-    for (unsigned short i=0; i < 52*numberOfDecks; ++i)
+    for (unsigned short i=0; i < numberOfCards; ++i)
     {
-        r = rand() % 13 * 4 * numberOfDecks;
-        c = tmp[r];
+        r = rand() % numberOfCards; // random number from 0 to numberOfCards-1
+        c = tmp[r]; // random card
         if (c > 0)
         {
             cards.push_back((c % 10) * (1 - c / 10) + ((c / 10) * 10));
@@ -33,17 +40,17 @@ void Shoe::shuffle()
 
 unsigned short Shoe::getCard()
 {
-    unsigned short card=cards[cards.size()];
+    unsigned short card=cards[cards.size()-1];
     cards.pop_back();
     return card;
 }
 
 double Shoe::decksRemaining()
 {
-    return 1.0;
+    return cards.size() / (float)(52*numberOfDecks);
 }
 
 bool Shoe::isFinished()
 {
-    return cards.size() > unused;
+    return decksRemaining() < (1-penetration);
 }
