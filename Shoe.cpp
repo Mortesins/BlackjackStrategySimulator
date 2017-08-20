@@ -38,6 +38,11 @@ unsigned short Shoe::getCard()
     return card;
 }
 
+double Shoe::decksRemaining()
+{
+    return 1.0;
+}
+
 bool Shoe::isFinished()
 {
     return cards.size() > unused;

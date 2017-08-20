@@ -1,5 +1,10 @@
 #include "Dealer.hpp"
 
+Dealer::Dealer(bool softHit)
+    :softhit(softHit)
+{
+}
+
 unsigned short Dealer::getHand()
 {
     return hand;

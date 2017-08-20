@@ -26,7 +26,7 @@ unsigned Strategy::consecutiveLosses(int streak) // convert streak to consecutiv
         return streak * -1;
 }
 
-bool getInsurance(double trueCount)
+bool Strategy::getInsurance(double trueCount)
 {
     return trueCount > 3;
 }

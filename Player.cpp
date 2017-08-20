@@ -10,36 +10,35 @@ Player::Player(const vector < vector <unsigned short> > & c, string n)
 
 unsigned Player::getBet(double trueCount, int streak)
 {
-    bet = strategy.getBet(trueCount,money,streak);
+    return strategy->getBet(trueCount,money,streak);
 }
 
 char Player::getPlay(double trueCount, unsigned short dealerUpCard, unsigned handIndex)     //dummy function, will be removed after Rules are implemented
 {
-    vector <char> actionsNotAllowed;
-    return getPlay(trueCount, dealerUpCard, handIndex, actionsNotAllowed);
+    return strategy->getPlay(trueCount, cards[handIndex], dealerUpCard);
 }
 
-char Player::getPlay(double trueCount, unsigned short dealerUpCard, unsigned handIndex, vector <char> actionsNotAllowed);
+char Player::getPlay(double trueCount, unsigned short dealerUpCard, unsigned handIndex, vector <char> actionsNotAllowed, unsigned bet)
 {
-    return strategy.getPlay(trueCount, dealerUpCard, handIndex, actionsNotAllowed);
+    return strategy->getPlay(trueCount, cards[handIndex], dealerUpCard, actionsNotAllowed, money, bet);
 }
 
 unsigned Player::getInsurance(double trueCount, unsigned bet)
 {
-    if ( strategy.getInsurance(trueCount) )
+    if ( strategy->getInsurance(trueCount) )
         return bet*0.5; // half of the placed bet
     else
         return 0;
 }
 
-void Player::payMoney(unsigned m)
+unsigned Player::payMoney(unsigned m)
 {
-    money -= m;
+    return money -= m;
 }
 
 int Player::inPlay()
 {
-    if (cards.length() == 0 && money < 2)
+    if (cards.size() == 0 && money < 2)
         return -1;
 //  if (strategy.getBet() == 0)     /*disabled to keep playing and use up cards*/
 //      return 0;
