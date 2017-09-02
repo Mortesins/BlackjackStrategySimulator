@@ -3,6 +3,7 @@
 Dealer::Dealer(bool softHit)
     :softhit(softHit)
 {
+    hand = 0;
 }
 
 unsigned short Dealer::getHand()
@@ -46,6 +47,12 @@ bool Dealer::blackjack()
     return ( (hand == 21) && (soft) );
 }
 
+void Dealer::reset()
+{
+    hand = 0;
+    cards.clear();
+}
+
 ostream& operator<<(ostream& os, const Dealer& d)
 {
     os << "Dealer:\t";
@@ -61,6 +68,6 @@ ostream& operator<<(ostream& os, const Dealer& d)
     if (d.cards[i] == 1)
         os << "A" << endl;
     else
-        os << d.cards[i] << endl;
+        os << d.cards[i] << "\tHand Total:\t " << d.hand << endl;
     return os;
 }

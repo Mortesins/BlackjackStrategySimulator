@@ -24,6 +24,7 @@ class Dealer
     bool hit();
     void newCard(unsigned short c);
     bool blackjack();
+    void reset();
 };
 
 #endif

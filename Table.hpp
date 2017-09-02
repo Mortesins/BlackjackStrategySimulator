@@ -37,6 +37,7 @@ class Table
     //void dealerPlay();
     void checkDealerBlackjack();
     void giveCollectMoney();
+    void trashCards();
     
     double trueCount();
     bool isMultipleOfBetSize(unsigned bet);

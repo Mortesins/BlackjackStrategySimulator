@@ -264,6 +264,15 @@ void Table::giveCollectMoney()
     }
 }
 
+void Table::trashCards()
+{
+    dealer.reset();
+    for (unsigned i = 0; i < players.size(); i++)
+    {
+        players[i].cards.clear();
+    }
+}
+
 double Table::trueCount()
 {
     return runningCount / shoe.decksRemaining();
@@ -356,6 +365,7 @@ void Table::playRound()
         if (!americanDealer)
             checkDealerBlackjack();
         giveCollectMoney();
+        trashCards();
     }
     else
     {

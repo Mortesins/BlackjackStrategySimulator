@@ -35,5 +35,7 @@ int main()
     Dealer* dealer = t.dddd();
     dealer->newCard(1);
     t.printDealerUpCardAndCardsRemaining();
+    t.dealerPlay();
+    t.printDealerAndCardsRemaining();
     return 0;
 }
