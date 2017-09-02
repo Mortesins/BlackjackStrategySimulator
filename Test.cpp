@@ -24,13 +24,10 @@ int main()
     c[0].push_back(1);
     c[0].push_back(9);
     c.push_back(tmp);
-    c[0].push_back(7);
-    c[0].push_back(7);
+    c[1].push_back(7);
     c[1].push_back(7);
     Player p(c,"gigi");
-    cout << p << endl;
     PlayerSeat ps(&p);
-    ps.pot.push_back(10);
     ps.pot.push_back(10);
     ps.pot.push_back(10);
     cout << ps << endl;

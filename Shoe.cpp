@@ -36,6 +36,8 @@ void Shoe::shuffle()
             i--;
         }
     }
+    // remove first card of the deck
+    cards.erase(cards.begin());
 }
 
 unsigned short Shoe::getCard()
