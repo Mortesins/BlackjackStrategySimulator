@@ -2,11 +2,14 @@
 #define DEALER_HPP
 
 #include <vector>
+// for ostream
+#include <iostream>
 
 using namespace std;
 
 class Dealer
 {
+    friend ostream& operator<<(ostream& os, const Dealer& d);
   private:
     vector <unsigned short> cards;
     unsigned short hand;

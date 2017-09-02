@@ -20,6 +20,7 @@ class Shoe
     void shuffle();
     unsigned short getCard();
     double decksRemaining();
+    unsigned cardsRemaining();
     bool isFinished();
 };
 

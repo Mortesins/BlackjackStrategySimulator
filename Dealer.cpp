@@ -45,3 +45,22 @@ bool Dealer::blackjack()
 {
     return ( (hand == 21) && (soft) );
 }
+
+ostream& operator<<(ostream& os, const Dealer& d)
+{
+    os << "Dealer:\t";
+    unsigned i = 0;
+    while (i < d.cards.size() - 1)
+    {
+        if (d.cards[i] == 1)
+            os << "A-";
+        else
+            os << d.cards[i] << "-";
+        i++;
+    }
+    if (d.cards[i] == 1)
+        os << "A" << endl;
+    else
+        os << d.cards[i] << endl;
+    return os;
+}

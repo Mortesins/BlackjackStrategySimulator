@@ -51,7 +51,28 @@ void Player::receiveMoney(unsigned m)
     money += m;
 }
 
-
+ostream& operator<<(ostream& os, const Player& p)
+{
+    os << "\tName:\t" << p.name << endl;
+    os << "\tBudget:\t" << p.money << endl;
+    os << "\tCards:\t";
+    unsigned j = 0;
+    for (unsigned i = 0; i < p.cards.size(); i++)
+    {
+        j = 0;
+        while (j < p.cards[i].size() - 1)
+        {
+            if (p.cards[i][j] == 1)
+                os << "A-";
+            else
+                os << p.cards[i][j] << "-";
+            j++;
+        }
+        os << p.cards[i][j] << "\t\t";
+    }
+    os << endl;
+    return os;   
+}
 
 /*** PRINTOUT CARDS ***\
 #include <iostream>

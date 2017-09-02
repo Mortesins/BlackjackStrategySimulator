@@ -10,6 +10,8 @@ using namespace std;
 #include "Dealer.hpp"
 #include "Rules.hpp"
 #include "CountingSystem.hpp"
+// for printDealerAndCardsRemaining()
+#include <iostream>
 
 class Table
 {
@@ -32,7 +34,7 @@ class Table
     void split(unsigned playerIndex, unsigned handIndex = 0);
     void doubleDown(unsigned playerIndex, unsigned handIndex = 0);
     bool checkPlayerBust(unsigned playerIndex, unsigned handIndex = 0);
-    void dealerPlay();
+    //void dealerPlay();
     void checkDealerBlackjack();
     void giveCollectMoney();
     
@@ -42,9 +44,15 @@ class Table
     unsigned handValue(unsigned playerIndex, unsigned handIndex);
     bool blackjack(unsigned playerIndex, unsigned handIndex);
   public:
+            void dealerPlay();
+            Dealer* dddd(){ return &dealer; }
+  
     Table();
+    Table(PlayerSeat& ps);
     
     void playRound();
+    void printDealerAndCardsRemaining();
+    void printDealerUpCardAndCardsRemaining();
     
 };
 

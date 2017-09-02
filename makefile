@@ -3,7 +3,7 @@ all: Test.cpp Table.o
 	
 Table.o: Table.cpp Table.hpp PlayerSeat.o Shoe.o Dealer.o Rules.o CountingSystem.o
 	g++ -Wall -c Table.cpp
-	ld -r -o Table_all.o PlayerSeat.o Shoe.o Dealer.o Rules.o CountingSystem.o
+	ld -r -o Table_all.o Table.o PlayerSeat.o Shoe.o Dealer.o Rules.o CountingSystem.o
 PlayerSeat.o: PlayerSeat.cpp PlayerSeat.hpp Player.o
 	g++ -Wall -c PlayerSeat.cpp
 Shoe.o: Shoe.cpp Shoe.hpp

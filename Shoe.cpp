@@ -50,6 +50,11 @@ double Shoe::decksRemaining()
     return cards.size() / (float)(52*numberOfDecks);
 }
 
+unsigned Shoe::cardsRemaining()
+{
+    return cards.size();
+}
+
 bool Shoe::isFinished()
 {
     return decksRemaining() < (1-penetration);

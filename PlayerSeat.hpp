@@ -5,6 +5,8 @@ using namespace std;
 
 #include "Player.hpp"
 #include <vector>
+// for ostream
+#include <iostream>
 
 class PlayerSeat
 {
@@ -16,8 +18,10 @@ class PlayerSeat
     Player* player;
     
     PlayerSeat();
+    PlayerSeat(Player* p);
     void updateStreakWin();
     void updateStreakLose();
 };
 
+ostream& operator<<(ostream& os, const PlayerSeat& ps);
 #endif

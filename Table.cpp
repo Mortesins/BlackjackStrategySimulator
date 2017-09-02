@@ -8,6 +8,14 @@ Table::Table()
    countingSystem = new CountingSystem();
 }
 
+Table::Table(PlayerSeat& ps)
+    : dealer(false),shoe(6,0.3)
+{
+   players.push_back(ps);
+   rules = new Rules();
+   countingSystem = new CountingSystem();
+}
+
 bool Table::playersInPlay()
 {
     bool inPlay = false;
@@ -355,4 +363,21 @@ void Table::playRound()
         return;
     }
 }
+
+void Table::printDealerUpCardAndCardsRemaining()
+{
+    unsigned short upCard = dealer.upCard();
+    if (upCard == 1)
+        cout << "Dealer:\tA" << endl;
+    else
+        cout << "Dealer:\t" << upCard << endl;
+    cout << "Cards remaining: "  << shoe.cardsRemaining() << endl;
+}
+
+void Table::printDealerAndCardsRemaining()
+{
+    cout << dealer;
+    cout << "Cards remaining: "  << shoe.cardsRemaining() << endl;
+}
+    
 

@@ -7,6 +7,13 @@ PlayerSeat::PlayerSeat()
     insurance = 0;
 }
 
+PlayerSeat::PlayerSeat(Player* p)
+{
+    player = p;
+    streak = 0;
+    insurance = 0;
+}
+
 void PlayerSeat::updateStreakWin()
 {
     if (streak >= 0)
@@ -23,6 +30,20 @@ void PlayerSeat::updateStreakLose()
         streak = -1; // so I know I lost 1 hand
 }
 
+ostream& operator<<(ostream& os, const PlayerSeat& ps)
+{
+    os << "Player Seat:" << endl;
+    os << *(ps.player);
+    os << "\tPots:\t";
+    unsigned i = 0;
+    while (i < ps.pot.size() - 1)
+    {
+        os << ps.pot[i] << "\t\t";
+        i++;
+    }
+    os << ps.pot[i] << endl;
+    return os;
+}
 /*** TEST const vector < vector <unsigned short> > & ***/
 /*int main()
 {

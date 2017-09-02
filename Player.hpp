@@ -5,11 +5,14 @@ using namespace std;
 
 #include <vector>
 #include <string>
+// for ostream
+#include <iostream>
 
 #include "Strategy/Strategy.hpp"
 
 class Player 
 {
+    friend ostream& operator<<(ostream& os,const Player& p);
   private:
     const string name;
     const vector <vector <unsigned short> > & cards;
