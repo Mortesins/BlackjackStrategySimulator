@@ -408,43 +408,6 @@ void Table::playRound()
     {
         placeBets();
 /************ TEST *******************/
-        distributeCardsSplit();
-/*************************************/
-        insurance();
-        if (americanDealer)
-            checkDealerBlackjack();
-        if (print)
-        {
-            printDealerUpCardAndCardsRemaining();
-            printPlayerSeats();
-            cout << "/****************************/" << endl;
-        }
-        playersPlay();
-        if (print)
-        {
-            printDealerUpCardAndCardsRemaining();
-            cout << "/****************************/" << endl;
-        }
-        dealerPlay();
-        if (print)
-        {
-            printDealerAndCardsRemaining();
-            printPlayerSeats();
-            cout << "/****************************/" << endl;
-        }
-        if (!americanDealer)
-        {
-            if (!checkDealerBlackjack()) // if true blackjack did not happen
-                giveCollectMoney();
-        }
-        else
-            giveCollectMoney();
-        if (print)
-            cout << "Player Money: " << players[0]->player->returnMoney() << endl;
-        trashCardsAndEmptyPots();
-        
-        placeBets();
-/************ TEST *******************/
         distributeCards();
 /*************************************/
         insurance();
