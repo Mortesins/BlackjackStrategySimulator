@@ -36,13 +36,15 @@ ostream& operator<<(ostream& os, const PlayerSeat& ps)
     os << *(ps.player);
     os << "\tPots:\t";
     unsigned i = 0;
-    while (i < ps.pot.size() - 1)
-    {
-        os << ps.pot[i] << "\t\t";
-        i++;
-    }
     if (ps.pot.size() != 0)
+    {
+        while (i < ps.pot.size() - 1)
+        {
+            os << ps.pot[i] << "\t\t";
+            i++;
+        }
         os << ps.pot[i] << endl;
+    }
     return os;
 }
 /*** TEST const vector < vector <unsigned short> > & ***/

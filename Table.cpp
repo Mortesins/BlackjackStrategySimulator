@@ -1,7 +1,7 @@
 #include "Table.hpp"
 
 Table::Table()
-    : dealer(false),shoe(6,0.3)
+    : dealer(false),shoe(6,0.3),americanDealer(false)
 {
    players.push_back(new PlayerSeat());
    rules = new Rules();
@@ -11,7 +11,7 @@ Table::Table()
 }
 
 Table::Table(bool p)
-    : dealer(false),shoe(6,0.3)
+    : dealer(false),shoe(6,0.3),americanDealer(false)
 {
    players.push_back(new PlayerSeat());
    rules = new Rules();
@@ -20,13 +20,24 @@ Table::Table(bool p)
    print = p;
 }
 
-Table::Table(PlayerSeat* ps)
-    : dealer(false),shoe(6,0.3)
+Table::Table(bool p, unsigned numberOfDecks)
+    : dealer(false),shoe(numberOfDecks,0.3),americanDealer(false)
 {
-   players.push_back(ps);
+   players.push_back(new PlayerSeat());
    rules = new Rules();
    countingSystem = new CountingSystem();
    runningCount = 0;
+   print = p;
+}
+
+Table::Table(bool p, unsigned numberOfDecks, const vector <unsigned short> & cardsToRemove)
+    : dealer(false),shoe(numberOfDecks,cardsToRemove),americanDealer(false)
+{
+   players.push_back(new PlayerSeat());
+   rules = new Rules();
+   countingSystem = new CountingSystem();
+   runningCount = 0;
+   print = p;
 }
 
 bool Table::playersInPlay()
@@ -404,48 +415,159 @@ bool Table::checkDealerBlackjack()
 
 void Table::playRound()
 {
-    if (playersInPlay())
+    placeBets();
+    distributeCards();
+    insurance();
+    if (americanDealer)
+        checkDealerBlackjack();
+    if (print)
     {
-        placeBets();
-/************ TEST *******************/
-        distributeCards();
-/*************************************/
-        insurance();
-        if (americanDealer)
-            checkDealerBlackjack();
-        if (print)
-        {
-            printDealerUpCardAndCardsRemaining();
-            printPlayerSeats();
-            cout << "/****************************/" << endl;
-        }
-        playersPlay();
-        if (print)
-        {
-            printDealerUpCardAndCardsRemaining();
-            cout << "/****************************/" << endl;
-        }
-        dealerPlay();
-        if (print)
-        {
-            printDealerAndCardsRemaining();
-            printPlayerSeats();
-            cout << "/****************************/" << endl;
-        }
-        if (!americanDealer)
-        {
-            if (!checkDealerBlackjack()) // if true blackjack did not happen
-                giveCollectMoney();
-        }
-        else
-            giveCollectMoney();
-        if (print)
-            cout << "Player Money: " << players[0]->player->returnMoney() << endl;
-        trashCardsAndEmptyPots();
+        printDealerUpCardAndCardsRemaining();
+        printPlayerSeats();
+        cout << "/****************************/" << endl;
     }
+    playersPlay();
+    if (print)
+    {
+        printDealerUpCardAndCardsRemaining();
+        cout << "/****************************/" << endl;
+    }
+    dealerPlay();
+    if (print)
+    {
+        printDealerAndCardsRemaining();
+        printPlayerSeats();
+        cout << "/****************************/" << endl;
+    }
+    if (!americanDealer)
+    {
+        if (!checkDealerBlackjack()) // if true blackjack did not happen
+            giveCollectMoney();
+    }
+    else
+        giveCollectMoney();
+    if (print)
+        cout << "Player Money: " << players[0]->player->returnMoney() << endl;
+    trashCardsAndEmptyPots();
+}
+
+/********************* SINGLE HAND TEST ************************************/
+unsigned Table::playHandTest(unsigned short dealerUpCard, unsigned short playerCard1, unsigned short playerCard2)
+{   // returns money of player at end of hand
+    vector <unsigned short> cardsToRemove;
+    cardsToRemove.push_back(dealerUpCard);
+    cardsToRemove.push_back(playerCard1);
+    cardsToRemove.push_back(playerCard2);
+    shoe.shuffleAndRemoveCards(cardsToRemove);
+    
+    placeBets();
+/************************/
+    distributeCardsSpecificHand(dealerUpCard,playerCard1,playerCard2);
+/************************/
+    insurance();
+    if (americanDealer)
+        checkDealerBlackjack();
+    if (print)
+    {
+        printDealerUpCardAndCardsRemaining();
+        printPlayerSeats();
+        cout << "/****************************/" << endl;
+    }
+    playersPlay();
+    if (print)
+    {
+        printDealerUpCardAndCardsRemaining();
+        cout << "/****************************/" << endl;
+    }
+    dealerPlay();
+    if (print)
+    {
+        printDealerAndCardsRemaining();
+        printPlayerSeats();
+        cout << "/****************************/" << endl;
+    }
+    if (!americanDealer)
+    {
+        if (!checkDealerBlackjack()) // if true blackjack did not happen
+            giveCollectMoney();
+    }
+    else
+        giveCollectMoney();
+    if (print)
+        cout << "Player Money: " << players[0]->player->returnMoney() << endl;
+    trashCardsAndEmptyPots();
+    return players[0]->player->returnMoney();
+}
+
+void Table::distributeCardsSpecificHand(unsigned short dealerUpCard, unsigned short playerCard1, unsigned short playerCard2)
+{
+    // cards is vector < vector <unsigned short> >, at the end of the round is emptied
+        // so I need to add an empty "vector <unsigned short>" to which i will give the cards
+    /*** add empty vector and give first card ***/
+    vector <unsigned short> tmp;
+    for (unsigned i = 0; i < players.size(); i++)
+    {
+        players[i]->cards.push_back(tmp);
+        players[i]->cards[0].push_back(playerCard1);
+    }
+    /********************************************/
+    
+    // give card to dealer
+    dealer.newCard(dealerUpCard);
+    
+    /*** give second card ***/
+    for (unsigned i = 0; i < players.size(); i++)
+    {
+        players[i]->cards[0].push_back(playerCard2);
+    }
+    /************************/
+    
+    // give second hole card to american dealer without counting it
+    if (americanDealer)
+        dealer.newCard(getCard(false));
 }
 
 /********************* TESTING ************************************/
+void Table::playRoundTest()
+{
+    placeBets();
+/************************/
+    distributeCardsSplit();
+/************************/
+    insurance();
+    if (americanDealer)
+        checkDealerBlackjack();
+    if (print)
+    {
+        printDealerUpCardAndCardsRemaining();
+        printPlayerSeats();
+        cout << "/****************************/" << endl;
+    }
+    playersPlay();
+    if (print)
+    {
+        printDealerUpCardAndCardsRemaining();
+        cout << "/****************************/" << endl;
+    }
+    dealerPlay();
+    if (print)
+    {
+        printDealerAndCardsRemaining();
+        printPlayerSeats();
+        cout << "/****************************/" << endl;
+    }
+    if (!americanDealer)
+    {
+        if (!checkDealerBlackjack()) // if true blackjack did not happen
+            giveCollectMoney();
+    }
+    else
+        giveCollectMoney();
+    if (print)
+        cout << "Player Money: " << players[0]->player->returnMoney() << endl;
+    trashCardsAndEmptyPots();
+}
+
 void Table::distributeCardsSplit()
 {
     // cards is vector < vector <unsigned short> >, at the end of the round is emptied
@@ -460,7 +582,7 @@ void Table::distributeCardsSplit()
     /********************************************/
     
     // give card to dealer
-    dealer.newCard(6);
+    dealer.newCard(1);
     
     /*** give second card ***/
     for (unsigned i = 0; i < players.size(); i++)

@@ -4,6 +4,25 @@
 
 using namespace std;
 
+double testHand(unsigned NumberOfSimulations, unsigned short dealerUpCard, unsigned short playerCard1, unsigned short playerCard2, bool print=false)
+{   // returns profit, percent from starting budget
+    unsigned money = 0;
+    double gain;
+    
+    Table t(print,6); // Print=true,6 decks, cardsToRemove=tmp
+    
+    for (unsigned i = 0; i < NumberOfSimulations; i++)
+    {
+        cout << "\t\t\tNumber: " << i << endl;
+        money += t.playHandTest(dealerUpCard,playerCard1,playerCard2);
+    }
+    gain = (money / (float)NumberOfSimulations - 20) / 20.0;
+    cout << endl;
+    cout << endl;
+    cout << "Average money: " << money / (float)NumberOfSimulations <<" starting from 20"<< endl;
+    return gain;
+}
+
 int main()
 {
 /********** SHOE TEST *******************/
@@ -39,20 +58,8 @@ int main()
     //t.dealerPlay();
     //t.printDealerAndCardsRemaining();
 /**********************************/
-    //unsigned money = 0;
-    //unsigned n = 1;
-    //for (unsigned i = 0; i < n; i++)
-    //{
-        //cout << "\t\t\t\t\tNumber: " << i << endl;
-        //t = Table(true);
-        
-    //}
-    //cout << endl;
-    //cout << endl;
-    //cout << money / (float)n << endl;
-
-    Table t(true);
-    t.playRound();
+    
+    testHand(1000,1,1,1);
 
     return 0;
 }

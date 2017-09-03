@@ -23,7 +23,7 @@ class Table
     CountingSystem* countingSystem;
     int runningCount;
     unsigned betSize;
-    bool americanDealer;
+    const bool americanDealer;
     
     bool print;
     
@@ -54,9 +54,17 @@ class Table
   
     Table();
     Table(bool p);
-    Table(PlayerSeat* ps);
+    Table(bool p, unsigned numberOfDecks);
+    Table(bool p, unsigned numberOfDecks, const vector <unsigned short> & cardsToRemove);
     
     void playRound();
+/****** TEST CERTAIN HAND *******/
+    unsigned playHandTest(unsigned short dealerUpCard, unsigned short playerCard1, unsigned short playerCard2);
+    void distributeCardsSpecificHand(unsigned short dealerUpCard, unsigned short playerCard1, unsigned short playerCard2);
+/********************************/
+/****** TEST ******/
+    void playRoundTest();
+/******************/
     void printDealerAndCardsRemaining();
     void printDealerUpCardAndCardsRemaining();
     void printPlayerSeats();
