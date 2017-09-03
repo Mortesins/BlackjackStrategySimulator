@@ -30,7 +30,7 @@ class Player
     
     unsigned getBet(double trueCount, int streak);
     char getPlay(double trueCount, unsigned short dealerUpCard, unsigned handIndex);
-    char getPlay(double trueCount, unsigned short dealerUpCard, unsigned handIndex, vector <char> actionsNotAllowed, unsigned bet);
+    char getPlay(double trueCount, unsigned short dealerUpCard, unsigned handIndex, vector <char>& actionsNotAllowed);
     unsigned getInsurance(double trueCount, unsigned bet);
 
     int inPlay();

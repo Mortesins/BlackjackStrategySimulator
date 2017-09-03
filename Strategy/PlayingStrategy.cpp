@@ -136,7 +136,7 @@ PlayingStrategy::PlayingStrategy()
     /****************/
 }
 
-char PlayingStrategy::getPlay(const vector <unsigned short>& cards, unsigned short dealerUpCard, vector <char> actionsNotAllowed) const
+char PlayingStrategy::getPlay(const vector <unsigned short>& cards, unsigned short dealerUpCard, const vector <char>& actionsNotAllowed) const
 {
     // order in which I check the actions depends on "orderOfActions"
     char action;
@@ -195,6 +195,10 @@ char PlayingStrategy::getPlay(const vector <unsigned short>& cards, unsigned sho
         
         i++;
     }
+    // if i=4 then all 4 actions (R,P,D,H) were not allowed so S
+    if (i == 4 && play == '\0')
+        play = 'S';
+    
     return play;
 }
 

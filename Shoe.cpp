@@ -40,7 +40,6 @@ void Shoe::shuffle()
     // remove first card of the deck
     cards.erase(cards.begin());
     
-    cards.push_back(2);
 }
 
 unsigned short Shoe::getCard()

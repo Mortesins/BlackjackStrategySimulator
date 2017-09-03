@@ -19,8 +19,9 @@ char Player::getPlay(double trueCount, unsigned short dealerUpCard, unsigned han
     return strategy->getPlay(trueCount, playerSeat->cards[handIndex], dealerUpCard);
 }
 
-char Player::getPlay(double trueCount, unsigned short dealerUpCard, unsigned handIndex, vector <char> actionsNotAllowed, unsigned bet)
+char Player::getPlay(double trueCount, unsigned short dealerUpCard, unsigned handIndex, vector <char>& actionsNotAllowed)
 {
+    unsigned bet = playerSeat->pot[handIndex];
     return strategy->getPlay(trueCount, playerSeat->cards[handIndex], dealerUpCard, actionsNotAllowed, money, bet);
 }
 
@@ -78,7 +79,12 @@ ostream& operator<<(ostream& os, const Player& p)
                 j++;
             }
             if (p.playerSeat->cards[i].size() > 0)
-                os << p.playerSeat->cards[i][j] << "\t\t";
+            {
+                if (p.playerSeat->cards[i][j] == 1)
+                    os << "A\t\t";
+                else
+                    os << p.playerSeat->cards[i][j] << "\t\t";
+            }
         }
     }
     os << endl;

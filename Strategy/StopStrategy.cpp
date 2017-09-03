@@ -15,7 +15,7 @@ StopStrategy::StopStrategy(unsigned budget, double percentageOverBudget, unsigne
 
 StopStrategy::StopStrategy()
 {
-    this->stopAt = 16;
+    this->stopAt = 24;
     this->numberOfLosses = 2;
 }
 

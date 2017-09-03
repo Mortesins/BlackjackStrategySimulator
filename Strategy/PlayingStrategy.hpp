@@ -19,7 +19,7 @@ class PlayingStrategy
   public:
     PlayingStrategy();
     char getPlay(const vector <unsigned short>& cards, unsigned short dealerUpCard) const;
-    char getPlay(const vector <unsigned short>& cards, unsigned short dealerUpCard, vector <char> actionsNotAllowed) const;
+    char getPlay(const vector <unsigned short>& cards, unsigned short dealerUpCard, const vector <char>& actionsNotAllowed) const;
 };
 
 #endif

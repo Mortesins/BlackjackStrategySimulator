@@ -113,7 +113,7 @@ void Table::playersPlay()
 void Table::playerPlay(unsigned playerIndex, unsigned handIndex)
 {   // plays handIndex, if split continues to play the first hand of the split, which has same handIndex
     unsigned short dealerUpCard = dealer.upCard();
-    
+    vector <char> actionsNotAllowed;
     bool playerBust;
     double tc;
     
@@ -123,8 +123,10 @@ void Table::playerPlay(unsigned playerIndex, unsigned handIndex)
     while (play != 'S') // until player stands
     {
         tc = trueCount();
+        // get actions not allowed
+        actionsNotAllowed = rules->getActionsNotAllowed(players[playerIndex]->cards,handIndex);
         // call getPlay (should give actionsAllowed here based on Rules)
-        play = players[playerIndex]->player->getPlay(tc,dealerUpCard,handIndex);
+        play = players[playerIndex]->player->getPlay(tc,dealerUpCard,handIndex,actionsNotAllowed);
         if (print)
             cout << "Play: " << play << endl;
         switch(play)
@@ -237,23 +239,26 @@ void Table::giveCollectMoney()
     // if dealer bust
     if (dealerHand > 21)
     {    // pay everyone
-        for (unsigned i = 0; i < players.size(); i++)
+        for (unsigned playerIndex = 0; playerIndex < players.size(); playerIndex++)
         {
             sum = 0;
             // sum all pots
-            for (unsigned j = 0; j < players[i]->pot.size(); j++)
+            for (unsigned handIndex = 0; handIndex < players[playerIndex]->pot.size(); handIndex++)
             {
-                sum += players[i]->pot[j]; //if player bust pot = 0
-            }
-            // reset all pots
-            while (players[i]->pot.size() > 0) 
-            {
-                players[i]->pot.pop_back();
+                if (blackjack(playerIndex,handIndex))
+                {
+                    players[playerIndex]->player->receiveMoney( (unsigned)(players[playerIndex]->pot[handIndex]*2.5) );
+                }
+                else
+                {
+                    sum += players[playerIndex]->pot[handIndex]; //if player bust pot = 0
+                }
+                players[playerIndex]->pot[handIndex] = 0; // reset all pot
             }
             // give the sum*2 to the player
-            players[i]->player->receiveMoney(sum*2);
+            players[playerIndex]->player->receiveMoney(sum*2);
             // player won
-            players[i]->updateStreakWin();
+            players[playerIndex]->updateStreakWin();
         }
     }
     else
@@ -268,7 +273,7 @@ void Table::giveCollectMoney()
                     // pay player 3:2, NOTE: BJ vs BJ already taken care
                     players[playerIndex]->player->receiveMoney( (unsigned)(players[playerIndex]->pot[handIndex]*2.5) );
                     // remove pot money
-                    players[playerIndex]->pot.erase(players[playerIndex]->pot.begin()+handIndex);
+                    players[playerIndex]->pot[handIndex] = 0;
                     // player won
                     players[playerIndex]->updateStreakWin();
                 }
@@ -362,10 +367,11 @@ bool Table::checkDealerBlackjack()
             for (unsigned j = 0; j < players[i]->cards.size(); j++)
             {
                 if (blackjack(i,j))
-                {   // draw, give back pot money. NOTE: Rules should check if BJvsBJ is a draw
-                    players[i]->player->receiveMoney(players[i]->pot[j]);
+                {   // draw, give back pot money. NOTE: Rules check if BJvsBJ is a draw
+                    if (rules->blackjackBlackjackPush())
+                        players[i]->player->receiveMoney(players[i]->pot[j]);
                     // remove pot money
-                    players[i]->pot.erase(players[i]->pot.begin()+j);
+                    players[i]->pot[j] = 0;
                     // draw so streak remains the same
                 }
                 else
@@ -401,7 +407,46 @@ void Table::playRound()
     if (playersInPlay())
     {
         placeBets();
-        distributeCardsDoubleDown();
+/************ TEST *******************/
+        distributeCardsSplit();
+/*************************************/
+        insurance();
+        if (americanDealer)
+            checkDealerBlackjack();
+        if (print)
+        {
+            printDealerUpCardAndCardsRemaining();
+            printPlayerSeats();
+            cout << "/****************************/" << endl;
+        }
+        playersPlay();
+        if (print)
+        {
+            printDealerUpCardAndCardsRemaining();
+            cout << "/****************************/" << endl;
+        }
+        dealerPlay();
+        if (print)
+        {
+            printDealerAndCardsRemaining();
+            printPlayerSeats();
+            cout << "/****************************/" << endl;
+        }
+        if (!americanDealer)
+        {
+            if (!checkDealerBlackjack()) // if true blackjack did not happen
+                giveCollectMoney();
+        }
+        else
+            giveCollectMoney();
+        if (print)
+            cout << "Player Money: " << players[0]->player->returnMoney() << endl;
+        trashCardsAndEmptyPots();
+        
+        placeBets();
+/************ TEST *******************/
+        distributeCards();
+/*************************************/
         insurance();
         if (americanDealer)
             checkDealerBlackjack();
@@ -447,7 +492,7 @@ void Table::distributeCardsSplit()
     for (unsigned i = 0; i < players.size(); i++)
     {
         players[i]->cards.push_back(tmp);
-        players[i]->cards[0].push_back(3);
+        players[i]->cards[0].push_back(1);
     }
     /********************************************/
     
@@ -457,7 +502,7 @@ void Table::distributeCardsSplit()
     /*** give second card ***/
     for (unsigned i = 0; i < players.size(); i++)
     {
-        players[i]->cards[0].push_back(3);
+        players[i]->cards[0].push_back(1);
     }
     /************************/
     
