@@ -8,10 +8,6 @@ Strategy::Strategy()
     name = "default";
     levels.push_back(-2);
     levels.push_back(2);
-    /*******************/
-    levels.push_back(4);
-    levels.push_back(6);
-    /*******************/
     PlayingStrategy* tmp = new PlayingStrategy();
     playingStrategies.push_back(tmp);
     playingStrategies.push_back(tmp);
@@ -35,15 +31,17 @@ char Strategy::getPlay(double trueCount, const vector <unsigned short>& cards, u
 {       
         // actions not allowed passed as parameter should be filled based on Rules
         // this method then adds actions not allowed by budget, as dictated by StopStrategy methods (canSplit, canDouble)
-    unsigned i = 0;
+    unsigned i = 0; // indexOfLevels
+    unsigned j = 0; // indexOfPlayingStrategies
     bool found = false;
     
-    while (!found && i < playingStrategies.size())
+    while (!found && i < levels.size())
     {
         if (trueCount > levels[i])
-            i++;
+            j++;
         else
             found = true;
+        i++;
     }
     
     if (!stopStrategy.canDouble(budget,bet))
@@ -51,20 +49,22 @@ char Strategy::getPlay(double trueCount, const vector <unsigned short>& cards, u
     else if (!stopStrategy.canSplit(budget,bet))
         actionsNotAllowed.push_back('P');
         
-    return playingStrategies[i]->getPlay(cards,dealerUpCard,actionsNotAllowed);
+    return playingStrategies[j]->getPlay(cards,dealerUpCard,actionsNotAllowed);
 }
 
 char Strategy::getPlay(double trueCount, const vector <unsigned short>& cards, unsigned short dealerUpCard) const
 {
-    unsigned i = 0;
+    unsigned i = 0; // indexOfLevels
+    unsigned j = 0; // indexOfPlayingStrategies
     bool found = false;
     
-    while (!found && i < playingStrategies.size())
+    while (!found && i < levels.size())
     {
         if (trueCount > levels[i])
-            i++;
+            j++;
         else
             found = true;
+        i++;
     }
-    return playingStrategies[i]->getPlay(cards,dealerUpCard);
+    return playingStrategies[j]->getPlay(cards,dealerUpCard);
 }

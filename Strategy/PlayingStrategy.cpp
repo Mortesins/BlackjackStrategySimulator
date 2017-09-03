@@ -61,11 +61,11 @@ PlayingStrategy::PlayingStrategy()
     bool tmpSplit[10][10] = 
     {
         // 2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  |  10 |  A  |  
-        {false,false,true ,true ,true ,true ,false,false,false,false}, // 2-2
-        {false,false,true ,true ,true ,true ,false,false,false,false}, // 3-3
-        {false,false,false,false,false,false,false,false,false,false}, // 4-4
+        {true ,true ,true ,true ,true ,true ,false,false,false,false}, // 2-2
+        {true ,true ,true ,true ,true ,true ,false,false,false,false}, // 3-3
+        {false,false,false,true ,true ,false,false,false,false,false}, // 4-4
         {false,false,false,false,false,false,false,false,false,false}, // 5-5
-        {false,true ,true ,true ,true ,false,false,false,false,false}, // 6-6
+        {true ,true ,true ,true ,true ,false,false,false,false,false}, // 6-6
         {true ,true ,true ,true ,true ,true ,false,false,false,false}, // 7-7
         {true ,true ,true ,true ,true ,true ,true ,true ,true ,true }, // 8-8
         {true ,true ,true ,true ,true ,false,true ,true ,false,false}, // 9-9
@@ -106,7 +106,7 @@ PlayingStrategy::PlayingStrategy()
             {false,false,false,false,false,false,false,false,false,false}, // 9-9
             {false,false,false,false,false,false,false,false,false,false}, // 10-10
             {false,false,false,false,true ,false,false,false,false,false}, // A-A
-            {false,false,false,true ,true ,false,false,false,false,false}, // A2
+            {false,false,false,false,true ,false,false,false,false,false}, // A2
             {false,false,false,true ,true ,false,false,false,false,false}, // A3
             {false,false,true ,true ,true ,false,false,false,false,false}, // A4
             {false,false,true ,true ,true ,false,false,false,false,false}, // A5
@@ -141,6 +141,8 @@ char PlayingStrategy::getPlay(const vector <unsigned short>& cards, unsigned sho
     // order in which I check the actions depends on "orderOfActions"
     char action;
     char play = '\0';
+    bool actionFound;
+    unsigned j;
     vector <unsigned short> coord = getCoordinates(cards,dealerUpCard);
     
     unsigned i = 0; 
@@ -149,8 +151,8 @@ char PlayingStrategy::getPlay(const vector <unsigned short>& cards, unsigned sho
         action = orderOfActions[i];
         
         /*** find action inside actionsNotAllowed ***/
-        bool actionFound = false;
-        unsigned j = 0;
+        actionFound = false;
+        j = 0;
         while (j < actionsNotAllowed.size() && !actionFound)
         {
             if (toupper(actionsNotAllowed[j]) == action) 

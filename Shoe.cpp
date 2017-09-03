@@ -22,6 +22,7 @@ void Shoe::shuffle()
     srand(time(0));
     unsigned short r;
     unsigned short c;
+
     for (unsigned short i=0; i < numberOfCards; ++i)
     {
         r = rand() % numberOfCards; // random number from 0 to numberOfCards-1
@@ -38,6 +39,8 @@ void Shoe::shuffle()
     }
     // remove first card of the deck
     cards.erase(cards.begin());
+    
+    cards.push_back(2);
 }
 
 unsigned short Shoe::getCard()
@@ -49,7 +52,7 @@ unsigned short Shoe::getCard()
 
 double Shoe::decksRemaining()
 {
-    return cards.size() / (float)(52*numberOfDecks);
+    return cards.size() / (float)(52);
 }
 
 unsigned Shoe::cardsRemaining()

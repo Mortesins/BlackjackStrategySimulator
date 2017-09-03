@@ -3,9 +3,9 @@ Strategy_all.o: PlayingStrategy.o StrategyMultiplier.o StrategySequence.o StopSt
 		# because in this example I am using StrategyMultiplier and StrategySequence, otherwise there is no dependency
 
 Strategy.o: Strategy.cpp Strategy.hpp PlayingStrategy.o StopStrategy.o
-	g++ -Wall -c Strategy.cpp
+	g++ -g -Wall -c Strategy.cpp
 PlayingStrategy.o: PlayingStrategy.cpp PlayingStrategy.hpp
-	g++ -Wall -c PlayingStrategy.cpp
+	g++ -g -Wall -c PlayingStrategy.cpp
 StopStrategy.o: StopStrategy.cpp StopStrategy.hpp
 	g++ -Wall -c StopStrategy.cpp
 

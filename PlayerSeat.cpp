@@ -2,7 +2,7 @@
 
 PlayerSeat::PlayerSeat()
 {
-    player = new Player(cards,"gigi");
+    player = new Player("gigi",this);
     streak = 0;
     insurance = 0;
 }
@@ -41,7 +41,8 @@ ostream& operator<<(ostream& os, const PlayerSeat& ps)
         os << ps.pot[i] << "\t\t";
         i++;
     }
-    os << ps.pot[i] << endl;
+    if (ps.pot.size() != 0)
+        os << ps.pot[i] << endl;
     return os;
 }
 /*** TEST const vector < vector <unsigned short> > & ***/

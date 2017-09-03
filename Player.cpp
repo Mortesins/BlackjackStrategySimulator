@@ -2,10 +2,11 @@
 
 #include "Strategy/StrategyMultiplier.hpp"
 
-Player::Player(const vector < vector <unsigned short> > & c, string n)
-    : name(n),cards(c)
+Player::Player(string n, PlayerSeat* ps)
+    : name(n),playerSeat(ps)
 {
     strategy = new StrategyMultiplier();
+    money = 20;
 }
 
 unsigned Player::getBet(double trueCount, int streak)
@@ -15,12 +16,12 @@ unsigned Player::getBet(double trueCount, int streak)
 
 char Player::getPlay(double trueCount, unsigned short dealerUpCard, unsigned handIndex)     //dummy function, will be removed after Rules are implemented
 {
-    return strategy->getPlay(trueCount, cards[handIndex], dealerUpCard);
+    return strategy->getPlay(trueCount, playerSeat->cards[handIndex], dealerUpCard);
 }
 
 char Player::getPlay(double trueCount, unsigned short dealerUpCard, unsigned handIndex, vector <char> actionsNotAllowed, unsigned bet)
 {
-    return strategy->getPlay(trueCount, cards[handIndex], dealerUpCard, actionsNotAllowed, money, bet);
+    return strategy->getPlay(trueCount, playerSeat->cards[handIndex], dealerUpCard, actionsNotAllowed, money, bet);
 }
 
 unsigned Player::getInsurance(double trueCount, unsigned bet)
@@ -33,12 +34,13 @@ unsigned Player::getInsurance(double trueCount, unsigned bet)
 
 unsigned Player::payMoney(unsigned m)
 {
-    return money -= m;
+    money -= m;
+    return m;
 }
 
 int Player::inPlay()
 {
-    if (cards.size() == 0 && money < 2)
+    if (playerSeat->cards.size() == 0 && money < 2)
         return -1;
 //  if (strategy.getBet() == 0)     /*disabled to keep playing and use up cards*/
 //      return 0;
@@ -51,24 +53,33 @@ void Player::receiveMoney(unsigned m)
     money += m;
 }
 
+unsigned Player::returnMoney()
+{
+    return money;
+}
+
 ostream& operator<<(ostream& os, const Player& p)
 {
     os << "\tName:\t" << p.name << endl;
     os << "\tBudget:\t" << p.money << endl;
     os << "\tCards:\t";
     unsigned j = 0;
-    for (unsigned i = 0; i < p.cards.size(); i++)
+    for (unsigned i = 0; i < p.playerSeat->cards.size(); i++)
     {
         j = 0;
-        while (j < p.cards[i].size() - 1)
+        if (p.playerSeat->cards[i].size() != 0)
         {
-            if (p.cards[i][j] == 1)
-                os << "A-";
-            else
-                os << p.cards[i][j] << "-";
-            j++;
+            while (j < (p.playerSeat->cards[i].size() - 1) ) // FOR SOME REASON THE WHILE LOOP COULD NOT CHECK SIZE() > 0 --> so the outer if was put
+            {
+                if (p.playerSeat->cards[i][j] == 1)
+                    os << "A-";
+                else
+                    os << p.playerSeat->cards[i][j] << "-";
+                j++;
+            }
+            if (p.playerSeat->cards[i].size() > 0)
+                os << p.playerSeat->cards[i][j] << "\t\t";
         }
-        os << p.cards[i][j] << "\t\t";
     }
     os << endl;
     return os;   

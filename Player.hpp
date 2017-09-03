@@ -9,17 +9,20 @@ using namespace std;
 #include <iostream>
 
 #include "Strategy/Strategy.hpp"
+#include "PlayerSeat.hpp"
+
+class PlayerSeat;
 
 class Player 
 {
     friend ostream& operator<<(ostream& os,const Player& p);
   private:
     const string name;
-    const vector <vector <unsigned short> > & cards;
+    const PlayerSeat* playerSeat;
     unsigned money;
     Strategy* strategy;
   public:
-    Player(const vector < vector <unsigned short> > & c, string n);
+    Player(string n, PlayerSeat* ps);
 /*** PRINTOUT CARDS ***\
     void prova();
 \**********************/
@@ -34,6 +37,10 @@ class Player
     
     unsigned payMoney(unsigned m);
     void receiveMoney(unsigned m);
+    
+/****************************/
+    unsigned returnMoney();
+/***************************/
 };
 
 #endif

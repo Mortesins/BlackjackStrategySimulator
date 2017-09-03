@@ -16,7 +16,7 @@ using namespace std;
 class Table
 {
   private:
-    vector <PlayerSeat> players;
+    vector <PlayerSeat*> players;
     Dealer dealer;
     Shoe shoe;
     Rules* rules;
@@ -25,19 +25,25 @@ class Table
     unsigned betSize;
     bool americanDealer;
     
+    bool print;
+    
     bool playersInPlay();
     void placeBets();
     void distributeCards();
+/**** TESTING ****/
+    void distributeCardsSplit();
+    void distributeCardsDoubleDown();
+/*****************/
     void insurance();
     void playersPlay();
     void playerPlay(unsigned playerIndex, unsigned handIndex = 0);
     void split(unsigned playerIndex, unsigned handIndex = 0);
     void doubleDown(unsigned playerIndex, unsigned handIndex = 0);
     bool checkPlayerBust(unsigned playerIndex, unsigned handIndex = 0);
-    //void dealerPlay();
-    void checkDealerBlackjack();
+    void dealerPlay();
+    bool checkDealerBlackjack();
     void giveCollectMoney();
-    void trashCards();
+    void trashCardsAndEmptyPots();
     
     double trueCount();
     bool isMultipleOfBetSize(unsigned bet);
@@ -45,15 +51,15 @@ class Table
     unsigned handValue(unsigned playerIndex, unsigned handIndex);
     bool blackjack(unsigned playerIndex, unsigned handIndex);
   public:
-            void dealerPlay();
-            Dealer* dddd(){ return &dealer; }
   
     Table();
-    Table(PlayerSeat& ps);
+    Table(bool p);
+    Table(PlayerSeat* ps);
     
     void playRound();
     void printDealerAndCardsRemaining();
     void printDealerUpCardAndCardsRemaining();
+    void printPlayerSeats();
     
 };
 

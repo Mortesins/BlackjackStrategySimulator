@@ -8,6 +8,8 @@ using namespace std;
 // for ostream
 #include <iostream>
 
+class Player;
+
 class PlayerSeat
 {
   public:

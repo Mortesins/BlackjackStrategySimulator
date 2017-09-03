@@ -18,24 +18,41 @@ int main()
     //s.shuffle();
     //cout << "Decks remaining: " << s.decksRemaining() << endl;
 /****************************************/
-    vector < vector <unsigned short> > c;
-    vector <unsigned short> tmp;
-    c.push_back(tmp);
-    c[0].push_back(1);
-    c[0].push_back(9);
-    c.push_back(tmp);
-    c[1].push_back(7);
-    c[1].push_back(7);
-    Player p(c,"gigi");
-    PlayerSeat ps(&p);
-    ps.pot.push_back(10);
-    ps.pot.push_back(10);
-    cout << ps << endl;
-    Table t(ps);
-    Dealer* dealer = t.dddd();
-    dealer->newCard(1);
-    t.printDealerUpCardAndCardsRemaining();
-    t.dealerPlay();
-    t.printDealerAndCardsRemaining();
+/*********** PRINT TEST ***********/
+    //vector < vector <unsigned short> > c;
+    //vector <unsigned short> tmp;
+    //c.push_back(tmp);
+    //c[0].push_back(1);
+    //c[0].push_back(9);
+    //c.push_back(tmp);
+    //c[1].push_back(7);
+    //c[1].push_back(7);
+    //Player p(c,"gigi");
+    //PlayerSeat ps(&p);
+    //ps.pot.push_back(10);
+    //ps.pot.push_back(10);
+    //cout << ps << endl;
+    //Table t(ps);
+    //Dealer* dealer = t.dddd();
+    //dealer->newCard(1);
+    //t.printDealerUpCardAndCardsRemaining();
+    //t.dealerPlay();
+    //t.printDealerAndCardsRemaining();
+/**********************************/
+    //unsigned money = 0;
+    //unsigned n = 1;
+    //for (unsigned i = 0; i < n; i++)
+    //{
+        //cout << "\t\t\t\t\tNumber: " << i << endl;
+        //t = Table(true);
+        
+    //}
+    //cout << endl;
+    //cout << endl;
+    //cout << money / (float)n << endl;
+
+    Table t(true);
+    t.playRound();
+
     return 0;
 }
