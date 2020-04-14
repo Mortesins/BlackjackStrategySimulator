@@ -1,8 +1,9 @@
 #include "Dealer.hpp"
 
 Dealer::Dealer(bool softHit)
-    :softhit(softHit)
+    :softHitFlag(softHit)
 {
+	cards.reserve(10);
     hand = 0;
 }
 
@@ -13,38 +14,43 @@ unsigned short Dealer::getHand()
 
 unsigned short Dealer::upCard()
 {
+	// TODO: throw if empty
     return cards[0];
 }
 
 unsigned short Dealer::holeCard()
 {
+	// TODO: throw if empty
     return cards[1];
 }
 
 bool Dealer::hit()
 {
-    return ( (hand < 17) || ( (hand == 17) && (soft) && (softhit) ) );
+    return ( (hand < 17) || ( (isSoftHand) && (softHitFlag) && (hand == 17) ) );
 }
 
 void Dealer::newCard(unsigned short c)
 {
     cards.push_back(c);
-    hand += c;
-    if ( (c == 1) && (hand <= 11) )
+    if ( (c == 1) && (hand <= 10) )
+	{
+		isSoftHand = true;
+		hand += 11;
+	}
+	else
+	{
+		hand += c;
+	}
+    if ( (isSoftHand) && (hand > 21) )
     {
-        soft = true;
-        hand += 10;
-    }
-    if ( (hand > 21) && (soft) )
-    {
-        soft = false;
+        isSoftHand = false;
         hand -= 10;
     }
 }
 
 bool Dealer::blackjack()
 {
-    return ( (hand == 21) && (soft) );
+    return ( (hand == 21) && (isSoftHand) );
 }
 
 void Dealer::reset()
@@ -63,7 +69,7 @@ ostream& operator<<(ostream& os, const Dealer& d)
             os << "A-";
         else
             os << d.cards[i] << "-";
-        i++;
+        ++i;
     }
     if (d.cards[i] == 1)
         os << "A" << endl;

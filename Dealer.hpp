@@ -11,10 +11,11 @@ class Dealer
 {
     friend ostream& operator<<(ostream& os, const Dealer& d);
   private:
+    bool softHitFlag;
+ 
     vector <unsigned short> cards;
     unsigned short hand;
-    bool softhit;
-    bool soft;
+    bool isSoftHand;
 
   public:
     Dealer(bool softHit);
