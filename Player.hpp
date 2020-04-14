@@ -1,19 +1,18 @@
 #ifndef PLAYER_HPP
 #define PLAYER_HPP
 
-using namespace std;
-
 #include <vector>
 #include <string>
 // for ostream
 #include <iostream>
 
+#include "Action.hpp"
 #include "Strategy/Strategy.hpp"
 #include "PlayerSeat.hpp"
 
 class PlayerSeat;
 
-class Player 
+class Player
 {
     friend ostream& operator<<(ostream& os,const Player& p);
   private:
@@ -26,18 +25,27 @@ class Player
 /*** PRINTOUT CARDS ***\
     void prova();
 \**********************/
-    
-    
+
+
     unsigned getBet(double trueCount, int streak);
-    char getPlay(double trueCount, unsigned short dealerUpCard, unsigned handIndex);
-    char getPlay(double trueCount, unsigned short dealerUpCard, unsigned handIndex, vector <char>& actionsNotAllowed);
+    Action getPlay(
+        double trueCount,
+        unsigned short dealerUpCard,
+        unsigned handIndex
+    );
+    Action getPlay(
+        double trueCount,
+        unsigned short dealerUpCard,
+        unsigned handIndex,
+        std::vector<Action>& actionsNotAllowed
+    );
     unsigned getInsurance(double trueCount, unsigned bet);
 
     int inPlay();
-    
+
     unsigned payMoney(unsigned m);
     void receiveMoney(unsigned m);
-    
+
 /****************************/
     unsigned returnMoney();
 /***************************/

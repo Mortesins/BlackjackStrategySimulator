@@ -17,22 +17,30 @@ PlayerSeat::PlayerSeat(Player* p)
 void PlayerSeat::updateStreakWin()
 {
     if (streak >= 0)
-        streak++;
+    {
+        ++streak;
+    }
     else // streak < 0
+    {
         streak = 1; // so I know I won 1 hand
+    }
 }
 
 void PlayerSeat::updateStreakLose()
 {
     if (streak <= 0)
-        streak--;
+    {
+        --streak;
+    }
     else // streak > 0
+    {
         streak = -1; // so I know I lost 1 hand
+    }
 }
 
 ostream& operator<<(ostream& os, const PlayerSeat& ps)
 {
-    os << "Player Seat:" << endl;
+    os << "Player Seat:" << std::endl;
     os << *(ps.player);
     os << "\tPots:\t";
     unsigned i = 0;
@@ -43,16 +51,16 @@ ostream& operator<<(ostream& os, const PlayerSeat& ps)
             os << ps.pot[i] << "\t\t";
             i++;
         }
-        os << ps.pot[i] << endl;
+        os << ps.pot[i] << std::endl;
     }
     return os;
 }
-/*** TEST const vector < vector <unsigned short> > & ***/
+/*** TEST const std::vector< std::vector<unsigned short> > & ***/
 /*int main()
 {
-    // TEST const vector < vector <unsigned short> > & //
+    // TEST const std::vector< std::vector<unsigned short> > & //
     PlayerSeat ps;
-    vector <unsigned short> tmp;
+    std::vector<unsigned short> tmp;
     tmp.push_back(0);
     tmp.push_back(2);
     tmp.push_back(3);

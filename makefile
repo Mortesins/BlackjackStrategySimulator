@@ -1,9 +1,9 @@
 all: Test.cpp Table.o
 	g++ -Wall -o prova Test.cpp Table_all.o Player.o Strategy/Strategy_all.o
 	
-Table.o: Table.cpp Table.hpp PlayerSeat.o Shoe.o Dealer.o Rules.o CountingSystem.o
+Table.o: Table.cpp Table.hpp PlayerSeat.o Shoe.o Dealer.o Rules.o CountingSystem.o Action.o
 	g++ -g -Wall -c Table.cpp
-	ld -r -o Table_all.o Table.o PlayerSeat.o Shoe.o Dealer.o Rules.o CountingSystem.o
+	ld -r -o Table_all.o Table.o PlayerSeat.o Shoe.o Dealer.o Rules.o CountingSystem.o Action.o
 PlayerSeat.o: PlayerSeat.cpp PlayerSeat.hpp Player.o
 	g++ -g -Wall -c PlayerSeat.cpp
 Shoe.o: Shoe.cpp Shoe.hpp
@@ -14,7 +14,8 @@ Rules.o: Rules.cpp Rules.hpp
 	g++ -Wall -c Rules.cpp
 CountingSystem.o: CountingSystem.cpp CountingSystem.hpp
 	g++ -Wall -c CountingSystem.cpp
-
+Action.o: Action.cpp Action.hpp
+	g++ -Wall -c Action.cpp
 Player.o: Player.cpp Player.hpp Strategy/Strategy_all.o
 	g++ -g -Wall -c Player.cpp
 Strategy/Strategy_all.o: $(shell find Strategy/ | grep ".cpp\|.hpp")
@@ -23,3 +24,5 @@ clean:
 	$(MAKE) -C Strategy/ clean
 	rm *.o || echo "Already removed *.o"
 	rm *.gch || echo "Already removed *.gch"
+test:
+	$(MAKE) -C Strategy/ test

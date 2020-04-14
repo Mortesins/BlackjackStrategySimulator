@@ -7,22 +7,24 @@ Shoe::Shoe(unsigned numberOfDecks, double penetration)
     shuffle();
 }
 
-Shoe::Shoe(unsigned numberOfDecks, const vector <unsigned short> & cardsToRemove)
+Shoe::Shoe(unsigned numberOfDecks, const std::vector<unsigned short> & cardsToRemove)
 {
     this->numberOfDecks = numberOfDecks;
     this->penetration = penetration;
     shuffleAndRemoveCards(cardsToRemove);
 }
 
-void Shoe::shuffleAndRemoveCards(const vector <unsigned short> & cardsToRemove)
+void Shoe::shuffleAndRemoveCards(const std::vector<unsigned short> & cardsToRemove)
 {
     // empty deck
     cards.clear();
     /*** fill decks as usual ***/
     unsigned numberOfCards = 13*4*numberOfDecks;
-    vector <unsigned short> tmp;
+    std::vector<unsigned short> tmp;
     for (unsigned i = 0; i < 13*4*numberOfDecks; ++i)
+    {
         tmp.push_back(1 + (i % 13));
+    }
     /***************************/
     /*** remove cards ***/
     unsigned j = 0;
@@ -31,11 +33,11 @@ void Shoe::shuffleAndRemoveCards(const vector <unsigned short> & cardsToRemove)
         // find the card to remove
         while (cardsToRemove[i] != tmp[j] && j < tmp.size())
         {
-            j++;
+            ++j;
         }
         // remove the card
         tmp.erase( tmp.begin() + j);
-        numberOfCards--;
+        --numberOfCards;
         j = 0; // restart searching from the beginning of the cards
     }
     /********************/
@@ -57,11 +59,11 @@ void Shoe::shuffleAndRemoveCards(const vector <unsigned short> & cardsToRemove)
         }
         else
         {
-            i--;
+            --i;
         }
     }
     /***************/
-    
+
     // remove the first card (end of deck)
     cards.erase(cards.begin() + cards.size() - 1);
 }
@@ -77,7 +79,9 @@ void Shoe::shuffle()
     unsigned numberOfCards = 13*4*numberOfDecks;
     unsigned short tmp[numberOfCards];
     for (unsigned i=0; i < 13*4*numberOfDecks; ++i)
+    {
         tmp[i] = 1 + (i % 13);
+    }
     /*** seed rand ***/
     timeval t1;
     gettimeofday(&t1, NULL);
@@ -97,7 +101,7 @@ void Shoe::shuffle()
         }
         else
         {
-            i--;
+            --i;
         }
     }
     // remove the first card (end of deck)
@@ -135,16 +139,16 @@ bool Shoe::isFinished()
     //{
         //for (unsigned j = 0; j < 10 - 1; j++)
         //{
-            //cout << cards[i] << ",";
+            //std::cout << cards[i] << ",";
             //i++;
         //}
-        //cout << cards[i] << endl;
+        //std::cout << cards[i] << std::endl;
         //i++;
     //}
     //while (i < cards.size() - 1)
     //{
-        //cout << cards[i] << ",";
+        //std::cout << cards[i] << ",";
         //i++;
     //}
-    //cout << cards[i] << endl;
+    //std::cout << cards[i] << std::endl;
 //}

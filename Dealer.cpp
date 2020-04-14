@@ -3,7 +3,7 @@
 Dealer::Dealer(bool softHit)
     :softHitFlag(softHit)
 {
-	cards.reserve(10);
+    cards.reserve(10);
     hand = 0;
 }
 
@@ -14,13 +14,13 @@ unsigned short Dealer::getHand()
 
 unsigned short Dealer::upCard()
 {
-	// TODO: throw if empty
+    // TODO: throw if empty
     return cards[0];
 }
 
 unsigned short Dealer::holeCard()
 {
-	// TODO: throw if empty
+    // TODO: throw if empty
     return cards[1];
 }
 
@@ -33,14 +33,14 @@ void Dealer::newCard(unsigned short c)
 {
     cards.push_back(c);
     if ( (c == 1) && (hand <= 10) )
-	{
-		isSoftHand = true;
-		hand += 11;
-	}
-	else
-	{
-		hand += c;
-	}
+    {
+        isSoftHand = true;
+        hand += 11;
+    }
+    else
+    {
+        hand += c;
+    }
     if ( (isSoftHand) && (hand > 21) )
     {
         isSoftHand = false;
@@ -59,21 +59,29 @@ void Dealer::reset()
     cards.clear();
 }
 
-ostream& operator<<(ostream& os, const Dealer& d)
+std::ostream& operator<<(std::ostream& os, const Dealer& d)
 {
     os << "Dealer:\t";
     unsigned i = 0;
     while (i < d.cards.size() - 1)
     {
         if (d.cards[i] == 1)
+        {
             os << "A-";
+        }
         else
+        {
             os << d.cards[i] << "-";
+        }
         ++i;
     }
     if (d.cards[i] == 1)
-        os << "A" << endl;
+    {
+        os << "A" << std::endl;
+    }
     else
-        os << d.cards[i] << "\tHand Total:\t " << d.hand << endl;
+    {
+        os << d.cards[i] << "\tHand Total:\t " << d.hand << std::endl;
+    }
     return os;
 }

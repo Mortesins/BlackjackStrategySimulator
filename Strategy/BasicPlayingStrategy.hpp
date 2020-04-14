@@ -1,47 +1,43 @@
-#ifndef PLAYING_STRATEGY_HPP
-#define PLAYING_STRATEGY_HPP
+#ifndef BASIC_PLAYING_STRATEGY_HPP
+#define BASIC_PLAYING_STRATEGY_HPP
 
 #include <vector>
+#include <algorithm>
 
-#include "../Action.hpp"
+#include "PlayingStrategy.hpp"
 
-class PlayingStrategy
+
+class BasicPlayingStrategy
+    : public PlayingStrategy
 {
-  private:
-    void printActionRow(unsigned row) const;
-
-  protected:
-    std::vector<std::vector<std::vector<Action>>> actionsTable;
-
   public:
-    //returns row and column of table
-    std::vector<unsigned short> getCoordinates(
-        const std::vector<unsigned short>& cards,
-        unsigned short dealerUpCard
-    ) const;
-
-    virtual void printStrategy() const;
+    BasicPlayingStrategy();
+    static inline bool actionIsAllowed(Action action, const std::vector<Action>& actionsNotAllowed);
     virtual Action getPlay(
         const std::vector<unsigned short>& cards,
         unsigned short dealerUpCard
-    ) const = 0;
+    ) const;
     virtual Action getPlay(
         const std::vector<unsigned short>& cards,
         unsigned short dealerUpCard,
         const std::vector<Action>& actionsNotAllowed
-    ) const = 0;
-
+    ) const;
     virtual Action getPlay(
         const std::vector<unsigned short>& cards,
         unsigned short dealerUpCard,
         double trueCount
-    ) const = 0;
+    ) const;
     virtual Action getPlay(
         const std::vector<unsigned short>& cards,
         unsigned short dealerUpCard,
         const std::vector<Action>& actionsNotAllowed,
         double trueCount
-    ) const = 0;
+    ) const;
 };
 
+
+inline bool BasicPlayingStrategy::actionIsAllowed(Action action, const std::vector<Action>& actionsNotAllowed)
+{
+    return std::find(actionsNotAllowed.begin(), actionsNotAllowed.end(), action) == actionsNotAllowed.end();
+}
 #endif

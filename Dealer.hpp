@@ -5,15 +5,13 @@
 // for ostream
 #include <iostream>
 
-using namespace std;
-
 class Dealer
 {
-    friend ostream& operator<<(ostream& os, const Dealer& d);
+    friend std::ostream& operator<<(std::ostream& os, const Dealer& d);
   private:
     bool softHitFlag;
- 
-    vector <unsigned short> cards;
+
+    std::vector<unsigned short> cards;
     unsigned short hand;
     bool isSoftHand;
 

@@ -12,13 +12,17 @@ unsigned StrategyMultiplier::getBet(double trueCount, unsigned budget, int strea
 {
     unsigned i = 0;
     bool found = false;
-    
+
     while (!found && i < multipliers.size())
     {
         if (trueCount > levels[i])
-            i++;
+        {
+            ++i;
+        }
         else
+        {
             found = true;
+        }
     }
     return this->stopStrategy.canPlaceBet(budget,floor(multipliers[i]*2),consecutiveLosses(streak));
 }

@@ -11,8 +11,8 @@ class StrategySequence
     : public Strategy
 {
   private:
-    vector <vector <unsigned> > bettingStrategies;
-    vector <unsigned> levelCounters;
+    std::vector<std::vector<unsigned> > bettingStrategies;
+    std::vector<unsigned> levelCounters;
   public:
     StrategySequence();
     unsigned getBet(double trueCount, unsigned budget, int streak);

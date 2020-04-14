@@ -30,7 +30,7 @@ Table::Table(bool p, unsigned numberOfDecks)
    print = p;
 }
 
-Table::Table(bool p, unsigned numberOfDecks, const vector <unsigned short> & cardsToRemove)
+Table::Table(bool p, unsigned numberOfDecks, const std::vector<unsigned short> & cardsToRemove)
     : dealer(false),shoe(numberOfDecks,cardsToRemove),americanDealer(false)
 {
    players.push_back(new PlayerSeat());
@@ -47,7 +47,7 @@ bool Table::playersInPlay()
     while ( !inPlay && (i < players.size()) )
     {
         inPlay = players[i]->player->inPlay();
-        i++;
+        ++i;
     }
     return inPlay;
 }
@@ -66,37 +66,40 @@ void Table::placeBets()
         }
         else
         {
-            throw "Table::placeBet: bet not multiple of betSize";
+            std::cout << "Table::placeBet: bet not multiple of betSize";
+            //throw "Table::placeBet: bet not multiple of betSize";
         }
     }
 }
 
 void Table::distributeCards()
 {
-    // cards is vector < vector <unsigned short> >, at the end of the round is emptied
-        // so I need to add an empty "vector <unsigned short>" to which i will give the cards
-    /*** add empty vector and give first card ***/
-    vector <unsigned short> tmp;
+    // cards is std::vector< std::vector<unsigned short> >, at the end of the round is emptied
+        // so I need to add an empty "std::vector<unsigned short>" to which i will give the cards
+    /*** add empty std::vector and give first card ***/
+    std::vector<unsigned short> tmp;
     for (unsigned i = 0; i < players.size(); i++)
     {
         players[i]->cards.push_back(tmp);
         players[i]->cards[0].push_back(getCard());
     }
     /********************************************/
-    
+
     // give card to dealer
     dealer.newCard(getCard());
-    
+
     /*** give second card ***/
     for (unsigned i = 0; i < players.size(); i++)
     {
         players[i]->cards[0].push_back(getCard());
     }
     /************************/
-    
+
     // give second hole card to american dealer without counting it
     if (americanDealer)
+    {
         dealer.newCard(getCard(false));
+    }
 }
 
 void Table::insurance()
@@ -124,45 +127,47 @@ void Table::playersPlay()
 void Table::playerPlay(unsigned playerIndex, unsigned handIndex)
 {   // plays handIndex, if split continues to play the first hand of the split, which has same handIndex
     unsigned short dealerUpCard = dealer.upCard();
-    vector <char> actionsNotAllowed;
+    std::vector<Action> actionsNotAllowed;
     bool playerBust;
     double tc;
-    
-    //cout << "\t\t\t\tPlayerPlay " << handIndex << endl;
-    
-    char play = '\0';
-    while (play != 'S') // until player stands
+
+    //std::cout << "\t\t\t\tPlayerPlay " << handIndex << std::endl;
+
+    Action play;
+    while (play != Action::STAND) // until player stands
     {
         tc = trueCount();
         // get actions not allowed
-        actionsNotAllowed = rules->getActionsNotAllowed(players[playerIndex]->cards,handIndex);
+        actionsNotAllowed = rules->getActionsNotAllowed(players[playerIndex]->cards, handIndex);
         // call getPlay (should give actionsAllowed here based on Rules)
         play = players[playerIndex]->player->getPlay(tc,dealerUpCard,handIndex,actionsNotAllowed);
         if (print)
-            cout << "Play: " << play << endl;
+        {
+            std::cout << "Play: " << play << std::endl;
+        }
         switch(play)
         {
-            /*** needs implementation 
+            /*** needs implementation
             case 'R':
                 // needs implementation
                 break;
             ***/
-            case 'P':
+            case Action::SPLIT:
                 split(playerIndex,handIndex);
                 break; // continues play on the same handIndex
-            case 'D':
+            case Action::DOUBLEDOWN:
                 doubleDown(playerIndex,handIndex);
                 if (print)
                     printPlayerSeats();
                 return; // player bust checked inside double down, and even if not bust the play ends here
-            case 'H':
+            case Action::HIT:
                 players[playerIndex]->cards[handIndex].push_back(getCard());
                 playerBust = checkPlayerBust(playerIndex,handIndex);
                 if (playerBust)
                 {
                     if (print)
                     {
-                        cout << "\\********* Player Bust ************/" << endl;
+                        std::cout << "\\********* Player Bust ************/" << std::endl;
                         printPlayerSeats();
                     }
                     return;
@@ -171,43 +176,44 @@ void Table::playerPlay(unsigned playerIndex, unsigned handIndex)
             default:
                 break;
         }
-        
+
         if (print)
+        {
             printPlayerSeats();
-        
+        }
     }
 }
 
 void Table::split(unsigned playerIndex, unsigned handIndex)
 {
-    // money for new cards, has to be same size as pot    
+    // money for new cards, has to be same size as pot
     unsigned money = players[playerIndex]->player->payMoney(players[playerIndex]->pot[handIndex]);
     // put money in the newPot
-    vector <unsigned>::iterator it_pot = players[playerIndex]->pot.begin();
+    std::vector<unsigned>::iterator it_pot = players[playerIndex]->pot.begin();
     players[playerIndex]->pot.insert(it_pot+handIndex+1,money);
     // create new hand with the second card of first hand
-    vector <unsigned short> newHand;
+    std::vector<unsigned short> newHand;
     // put second card of first hand in the newHand
     newHand.push_back(players[playerIndex]->cards[handIndex][1]);
     // remove card, since there are two cards, pop_back removes [1]
     players[playerIndex]->cards[handIndex].pop_back();
     // add newHand to hands
-    vector <vector <unsigned short> >::iterator it_cards = players[playerIndex]->cards.begin();
+    std::vector<std::vector<unsigned short> >::iterator it_cards = players[playerIndex]->cards.begin();
     players[playerIndex]->cards.insert(it_cards+handIndex+1,newHand);
-    
+
     // give a card to the two new hands
     players[playerIndex]->cards[handIndex].push_back(getCard());
     players[playerIndex]->cards[handIndex+1].push_back(getCard());
-}    
+}
 
 void Table::doubleDown(unsigned playerIndex, unsigned handIndex)
 {
     // double the money, so player has to put what is in the pot
     unsigned money = players[playerIndex]->player->payMoney(players[playerIndex]->pot[handIndex]);
-    players[playerIndex]->pot[handIndex] += money; 
+    players[playerIndex]->pot[handIndex] += money;
     // give card
     players[playerIndex]->cards[handIndex].push_back(getCard());
-    // check if player bust    
+    // check if player bust
     checkPlayerBust(playerIndex);
 }
 
@@ -217,7 +223,7 @@ bool Table::checkPlayerBust(unsigned playerIndex, unsigned handIndex)
     {   //bust
         if (print)
         {
-            cout << "/********* Player Bust ************/" << endl;
+            std::cout << "/********* Player Bust ************/" << std::endl;
             printPlayerSeats();
         }
         /*** empty cards ***/
@@ -244,7 +250,7 @@ void Table::dealerPlay()
 
 void Table::giveCollectMoney()
 {
-    //cout << "GiveCollectMoney" << endl;
+    //std::cout << "GiveCollectMoney" << std::endl;
     unsigned sum;
     unsigned dealerHand = dealer.getHand();
     // if dealer bust
@@ -341,7 +347,9 @@ unsigned short Table::getCard(bool countCard)
 { // no counting when giving second hole card to american dealer
     unsigned short card = shoe.getCard();
     if (countCard)
+    {
         runningCount += countingSystem->cardValue(card);
+    }
     return card;
 }
 
@@ -349,7 +357,9 @@ unsigned Table::handValue(unsigned playerIndex, unsigned handIndex)
 {   // hand index choses on which hand to calculate the value (there can be more hands if split)
     unsigned handValue = 0;
     if (players[playerIndex]->cards[handIndex].empty())
+    {
         return handValue; // zero
+    }
     for (unsigned i = 0; i < players[playerIndex]->cards[handIndex].size(); i++)
     {
         handValue += players[playerIndex]->cards[handIndex][i];
@@ -361,15 +371,15 @@ bool Table::blackjack(unsigned playerIndex, unsigned handIndex)
 {   // only possibility is [1,10] or [10,1]
     if (players[playerIndex]->cards[handIndex].empty()) // if player bust
         return false;
-    return ( 
-              (  (players[playerIndex]->cards[handIndex][0] == 1) && (players[playerIndex]->cards[handIndex][1] == 10)  ) || 
-              (  (players[playerIndex]->cards[handIndex][0] == 10) && (players[playerIndex]->cards[handIndex][1] == 1)  )
-           );
+    return (
+      (  (players[playerIndex]->cards[handIndex][0] == 1) && (players[playerIndex]->cards[handIndex][1] == 10)  ) ||
+      (  (players[playerIndex]->cards[handIndex][0] == 10) && (players[playerIndex]->cards[handIndex][1] == 1)  )
+   );
 }
 
 bool Table::checkDealerBlackjack()
 {
-    //cout << "checkDealer Blackjack" << endl;
+    //std::cout << "checkDealer Blackjack" << std::endl;
     if (dealer.blackjack())
     {
         for (unsigned i = 0; i < players.size(); i++)
@@ -380,7 +390,9 @@ bool Table::checkDealerBlackjack()
                 if (blackjack(i,j))
                 {   // draw, give back pot money. NOTE: Rules check if BJvsBJ is a draw
                     if (rules->blackjackBlackjackPush())
+                    {
                         players[i]->player->receiveMoney(players[i]->pot[j]);
+                    }
                     // remove pot money
                     players[i]->pot[j] = 0;
                     // draw so streak remains the same
@@ -391,7 +403,7 @@ bool Table::checkDealerBlackjack()
                 }
             }
             // remove all remaining (no blackjack) bets of all pots (there are more pots if split)
-            while (players[i]->pot.size() > 0) 
+            while (players[i]->pot.size() > 0)
             {
                 players[i]->pot.pop_back();
             }
@@ -419,112 +431,130 @@ void Table::playRound()
     distributeCards();
     insurance();
     if (americanDealer)
+    {
         checkDealerBlackjack();
+    }
     if (print)
     {
         printDealerUpCardAndCardsRemaining();
         printPlayerSeats();
-        cout << "/****************************/" << endl;
+        std::cout << "/****************************/" << std::endl;
     }
     playersPlay();
     if (print)
     {
         printDealerUpCardAndCardsRemaining();
-        cout << "/****************************/" << endl;
+        std::cout << "/****************************/" << std::endl;
     }
     dealerPlay();
     if (print)
     {
         printDealerAndCardsRemaining();
         printPlayerSeats();
-        cout << "/****************************/" << endl;
+        std::cout << "/****************************/" << std::endl;
     }
     if (!americanDealer)
     {
         if (!checkDealerBlackjack()) // if true blackjack did not happen
+        {
             giveCollectMoney();
+        }
     }
     else
+    {
         giveCollectMoney();
+    }
     if (print)
-        cout << "Player Money: " << players[0]->player->returnMoney() << endl;
+    {
+        std::cout << "Player Money: " << players[0]->player->returnMoney() << std::endl;
+    }
     trashCardsAndEmptyPots();
 }
 
 /********************* SINGLE HAND TEST ************************************/
 unsigned Table::playHandTest(unsigned short dealerUpCard, unsigned short playerCard1, unsigned short playerCard2)
 {   // returns money of player at end of hand
-    vector <unsigned short> cardsToRemove;
+    std::vector<unsigned short> cardsToRemove;
     cardsToRemove.push_back(dealerUpCard);
     cardsToRemove.push_back(playerCard1);
     cardsToRemove.push_back(playerCard2);
     shoe.shuffleAndRemoveCards(cardsToRemove);
-    
+
     placeBets();
 /************************/
     distributeCardsSpecificHand(dealerUpCard,playerCard1,playerCard2);
 /************************/
     insurance();
     if (americanDealer)
+    {
         checkDealerBlackjack();
+    }
     if (print)
     {
         printDealerUpCardAndCardsRemaining();
         printPlayerSeats();
-        cout << "/****************************/" << endl;
+        std::cout << "/****************************/" << std::endl;
     }
     playersPlay();
     if (print)
     {
         printDealerUpCardAndCardsRemaining();
-        cout << "/****************************/" << endl;
+        std::cout << "/****************************/" << std::endl;
     }
     dealerPlay();
     if (print)
     {
         printDealerAndCardsRemaining();
         printPlayerSeats();
-        cout << "/****************************/" << endl;
+        std::cout << "/****************************/" << std::endl;
     }
     if (!americanDealer)
     {
         if (!checkDealerBlackjack()) // if true blackjack did not happen
+        {
             giveCollectMoney();
+        }
     }
     else
+    {
         giveCollectMoney();
+    }
     if (print)
-        cout << "Player Money: " << players[0]->player->returnMoney() << endl;
+    {
+        std::cout << "Player Money: " << players[0]->player->returnMoney() << std::endl;
+    }
     trashCardsAndEmptyPots();
     return players[0]->player->returnMoney();
 }
 
 void Table::distributeCardsSpecificHand(unsigned short dealerUpCard, unsigned short playerCard1, unsigned short playerCard2)
 {
-    // cards is vector < vector <unsigned short> >, at the end of the round is emptied
-        // so I need to add an empty "vector <unsigned short>" to which i will give the cards
-    /*** add empty vector and give first card ***/
-    vector <unsigned short> tmp;
+    // cards is std::vector< std::vector<unsigned short> >, at the end of the round is emptied
+        // so I need to add an empty "std::vector<unsigned short>" to which i will give the cards
+    /*** add empty std::vector and give first card ***/
+    std::vector<unsigned short> tmp;
     for (unsigned i = 0; i < players.size(); i++)
     {
         players[i]->cards.push_back(tmp);
         players[i]->cards[0].push_back(playerCard1);
     }
     /********************************************/
-    
+
     // give card to dealer
     dealer.newCard(dealerUpCard);
-    
+
     /*** give second card ***/
     for (unsigned i = 0; i < players.size(); i++)
     {
         players[i]->cards[0].push_back(playerCard2);
     }
     /************************/
-    
+
     // give second hole card to american dealer without counting it
     if (americanDealer)
+    {
         dealer.newCard(getCard(false));
+    }
 }
 
 /********************* TESTING ************************************/
@@ -536,115 +566,131 @@ void Table::playRoundTest()
 /************************/
     insurance();
     if (americanDealer)
+    {
         checkDealerBlackjack();
+    }
     if (print)
     {
         printDealerUpCardAndCardsRemaining();
         printPlayerSeats();
-        cout << "/****************************/" << endl;
+        std::cout << "/****************************/" << std::endl;
     }
     playersPlay();
     if (print)
     {
         printDealerUpCardAndCardsRemaining();
-        cout << "/****************************/" << endl;
+        std::cout << "/****************************/" << std::endl;
     }
     dealerPlay();
     if (print)
     {
         printDealerAndCardsRemaining();
         printPlayerSeats();
-        cout << "/****************************/" << endl;
+        std::cout << "/****************************/" << std::endl;
     }
     if (!americanDealer)
     {
         if (!checkDealerBlackjack()) // if true blackjack did not happen
+        {
             giveCollectMoney();
+        }
     }
     else
+    {
         giveCollectMoney();
+    }
     if (print)
-        cout << "Player Money: " << players[0]->player->returnMoney() << endl;
+    {
+        std::cout << "Player Money: " << players[0]->player->returnMoney() << std::endl;
+    }
     trashCardsAndEmptyPots();
 }
 
 void Table::distributeCardsSplit()
 {
-    // cards is vector < vector <unsigned short> >, at the end of the round is emptied
-        // so I need to add an empty "vector <unsigned short>" to which i will give the cards
-    /*** add empty vector and give first card ***/
-    vector <unsigned short> tmp;
+    // cards is std::vector< std::vector<unsigned short> >, at the end of the round is emptied
+        // so I need to add an empty "std::vector<unsigned short>" to which i will give the cards
+    /*** add empty std::vector and give first card ***/
+    std::vector<unsigned short> tmp;
     for (unsigned i = 0; i < players.size(); i++)
     {
         players[i]->cards.push_back(tmp);
         players[i]->cards[0].push_back(1);
     }
     /********************************************/
-    
+
     // give card to dealer
     dealer.newCard(1);
-    
+
     /*** give second card ***/
     for (unsigned i = 0; i < players.size(); i++)
     {
         players[i]->cards[0].push_back(1);
     }
     /************************/
-    
+
     // give second hole card to american dealer without counting it
     if (americanDealer)
+    {
         dealer.newCard(getCard(false));
+    }
 }
 
 void Table::distributeCardsDoubleDown()
 {
-    // cards is vector < vector <unsigned short> >, at the end of the round is emptied
-        // so I need to add an empty "vector <unsigned short>" to which i will give the cards
-    /*** add empty vector and give first card ***/
-    vector <unsigned short> tmp;
+    // cards is std::vector< std::vector<unsigned short> >, at the end of the round is emptied
+        // so I need to add an empty "std::vector<unsigned short>" to which i will give the cards
+    /*** add empty std::vector and give first card ***/
+    std::vector<unsigned short> tmp;
     for (unsigned i = 0; i < players.size(); i++)
     {
         players[i]->cards.push_back(tmp);
         players[i]->cards[0].push_back(1);
     }
     /********************************************/
-    
+
     // give card to dealer
     dealer.newCard(5);
-    
+
     /*** give second card ***/
     for (unsigned i = 0; i < players.size(); i++)
     {
         players[i]->cards[0].push_back(2);
     }
     /************************/
-    
+
     // give second hole card to american dealer without counting it
     if (americanDealer)
+    {
         dealer.newCard(getCard(false));
+    }
 }
 
 void Table::printDealerUpCardAndCardsRemaining()
 {
     unsigned short upCard = dealer.upCard();
     if (upCard == 1)
-        cout << "Dealer:\tA" << endl;
+    {
+        std::cout << "Dealer:\tA" << std::endl;
+    }
     else
-        cout << "Dealer:\t" << upCard << endl;
-    cout << "Cards remaining: "  << shoe.cardsRemaining() << endl;
+    {
+        std::cout << "Dealer:\t" << upCard << std::endl;
+    }
+    std::cout << "Cards remaining: "  << shoe.cardsRemaining() << std::endl;
 }
 
 void Table::printDealerAndCardsRemaining()
 {
-    cout << dealer;
-    cout << "Cards remaining: "  << shoe.cardsRemaining() << endl;
+    std::cout << dealer;
+    std::cout << "Cards remaining: "  << shoe.cardsRemaining() << std::endl;
 }
-    
+
 void Table::printPlayerSeats()
 {
-    //cout << "gigi:" << players[0]->cards[0][0] << "-" << players[0]->cards[0][1] << endl;
+    //std::cout << "gigi:" << players[0]->cards[0][0] << "-" << players[0]->cards[0][1] << std::endl;
     for (unsigned i = 0; i < players.size(); i++)
     {
-        cout << *(players[i]);
+        std::cout << *(players[i]);
     }
 }

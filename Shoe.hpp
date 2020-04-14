@@ -7,26 +7,24 @@
 #include <vector>
 #include <string>
 
-using namespace std;
-
 class Shoe
 {
   private:
     unsigned numberOfDecks;
     double penetration;
-    vector <unsigned short> cards;
+    std::vector<unsigned short> cards;
 
   public:
     Shoe(unsigned numberOfDecks, double penetration);
-    Shoe(unsigned numberOfDecks, const vector <unsigned short> & cardsToRemove);
-    
+    Shoe(unsigned numberOfDecks, const std::vector<unsigned short> & cardsToRemove);
+
     void shuffle();
-    void shuffleAndRemoveCards(const vector <unsigned short> & cardsToRemove);
+    void shuffleAndRemoveCards(const std::vector<unsigned short> & cardsToRemove);
     unsigned short getCard();
     double decksRemaining();
     unsigned cardsRemaining();
     bool isFinished();
-    
+
     /******************* TESTING *******************/
     //void printDeck();
 };

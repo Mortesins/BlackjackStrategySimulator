@@ -7,13 +7,13 @@ Rules::Rules()
     bjBjPush = true;
 }
 
-vector <char> Rules::getActionsNotAllowed(const vector <vector <unsigned short> > & cards, unsigned handIndex)
+std::vector<Action> Rules::getActionsNotAllowed(const std::vector<std::vector<unsigned short>> & cards, unsigned handIndex)
 {
-    vector <char> actionsNotAllowed;
+    std::vector<Action> actionsNotAllowed;
     /*** static rules ***/
-    actionsNotAllowed.push_back('R');
+    actionsNotAllowed.push_back(Action::SURRENDER);
     /********************/
-    
+
     if (aces) // whatever the handIndex, only stand allowed
     {   // previous hand were aces
         if (cards.size() == 2)
@@ -21,9 +21,9 @@ vector <char> Rules::getActionsNotAllowed(const vector <vector <unsigned short> 
             handsAfterAceSplit++;
             if (handsAfterAceSplit <= 2) // only two hands after aces
             {
-                actionsNotAllowed.push_back('P');
-                actionsNotAllowed.push_back('D');
-                actionsNotAllowed.push_back('H');
+                actionsNotAllowed.push_back(Action::SPLIT);
+                actionsNotAllowed.push_back(Action::DOUBLEDOWN);
+                actionsNotAllowed.push_back(Action::HIT);
                 return actionsNotAllowed;
             }
             else
@@ -45,11 +45,11 @@ vector <char> Rules::getActionsNotAllowed(const vector <vector <unsigned short> 
     }
     if (cards[handIndex].size() > 2)
     {   // no double down
-        actionsNotAllowed.push_back('D');
+        actionsNotAllowed.push_back(Action::DOUBLEDOWN);
     }
     if (cards.size() == 4)
     {   // no more splits
-        actionsNotAllowed.push_back('P');
+        actionsNotAllowed.push_back(Action::SPLIT);
     }
     return actionsNotAllowed;
 }

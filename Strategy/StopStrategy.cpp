@@ -1,4 +1,5 @@
 #include "StopStrategy.hpp"
+#include <iostream>
 
 StopStrategy::StopStrategy(unsigned stopAt, int numberOfLosses)
 {
@@ -41,11 +42,17 @@ unsigned StopStrategy::canPlaceBet(unsigned budget, unsigned bet, unsigned conse
     else if (consecutiveLosses < numberOfLosses) // it's like consecutiveLosses == 1 when numberOfLosses=2
     {
         if (budget == stopAt)
+        {
             return 0; //stop
+        }
         else if (budget - bet < stopAt)
+        {
             return (budget - stopAt);
+        }
         else
+        {
             return bet;
+        }
     }
     else if (consecutiveLosses == numberOfLosses)
     {
@@ -53,6 +60,7 @@ unsigned StopStrategy::canPlaceBet(unsigned budget, unsigned bet, unsigned conse
     }
     else
     {
+        std::cout << "StopStrategy::canPlaceBet";
         throw "StopStrategy::canPlaceBet";
     }
 }
@@ -61,13 +69,19 @@ bool StopStrategy::canSplit(unsigned budget, unsigned bet) const
 {
     return true;
 }
- 
+
 bool StopStrategy::canDouble(unsigned budget, unsigned bet) const
 {
     if (budget < stopAt)
+    {
         return true;
+    }
     else if (budget == stopAt || budget - bet < stopAt)
+    {
         return false;
+    }
     else
+    {
         return true;
+    }
 }

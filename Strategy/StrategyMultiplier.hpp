@@ -11,7 +11,7 @@ class StrategyMultiplier
     : public Strategy
 {
   private:
-    vector <double> multipliers;
+    std::vector<double> multipliers;
   public:
     StrategyMultiplier();
     unsigned getBet(double trueCount, unsigned budget, int streak);

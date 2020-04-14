@@ -1,8 +1,6 @@
 #ifndef TABLE_HPP
 #define TABLE_HPP
 
-using namespace std;
-
 #include <vector>
 
 #include "PlayerSeat.hpp"
@@ -16,7 +14,7 @@ using namespace std;
 class Table
 {
   private:
-    vector <PlayerSeat*> players;
+    std::vector<PlayerSeat*> players;
     Dealer dealer;
     Shoe shoe;
     Rules* rules;
@@ -24,9 +22,9 @@ class Table
     int runningCount;
     unsigned betSize;
     const bool americanDealer;
-    
+
     bool print;
-    
+
     bool playersInPlay();
     void placeBets();
     void distributeCards();
@@ -44,19 +42,19 @@ class Table
     bool checkDealerBlackjack();
     void giveCollectMoney();
     void trashCardsAndEmptyPots();
-    
+
     double trueCount();
     bool isMultipleOfBetSize(unsigned bet);
     unsigned short getCard(bool countCard = true);
     unsigned handValue(unsigned playerIndex, unsigned handIndex);
     bool blackjack(unsigned playerIndex, unsigned handIndex);
   public:
-  
+
     Table();
     Table(bool p);
     Table(bool p, unsigned numberOfDecks);
-    Table(bool p, unsigned numberOfDecks, const vector <unsigned short> & cardsToRemove);
-    
+    Table(bool p, unsigned numberOfDecks, const std::vector<unsigned short> & cardsToRemove);
+
     void playRound();
 /****** TEST CERTAIN HAND *******/
     unsigned playHandTest(unsigned short dealerUpCard, unsigned short playerCard1, unsigned short playerCard2);
@@ -68,7 +66,7 @@ class Table
     void printDealerAndCardsRemaining();
     void printDealerUpCardAndCardsRemaining();
     void printPlayerSeats();
-    
+
 };
 
 #endif
