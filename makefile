@@ -20,9 +20,17 @@ Player.o: Player.cpp Player.hpp Strategy/Strategy_all.o
 	g++ -g -Wall -c Player.cpp
 Strategy/Strategy_all.o: $(shell find Strategy/ | grep ".cpp\|.hpp")
 	$(MAKE) -C Strategy/
+
+Tests/testDealer: Tests/TestDealer.cpp Dealer.o
+	g++ -Wall -o Tests/testDealer Tests/TestDealer.cpp Dealer.o -lgtest -lgtest_main -lpthread
+
 clean:
 	$(MAKE) -C Strategy/ clean
 	rm *.o || echo "Already removed *.o"
 	rm *.gch || echo "Already removed *.gch"
-test:
+test: Tests/testDealer
+	chmod u+x Tests/test*
+	for i in `ls Tests | grep test`; do ./Tests/$$i; done
+testall:
+	$(MAKE) test
 	$(MAKE) -C Strategy/ test

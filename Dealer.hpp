@@ -16,7 +16,7 @@ class Dealer
     bool isSoftHand;
 
   public:
-    Dealer(bool softHit);
+    Dealer(bool softHit=false);
     unsigned short getHand();
     unsigned short upCard();
     unsigned short holeCard(); //for american dealer

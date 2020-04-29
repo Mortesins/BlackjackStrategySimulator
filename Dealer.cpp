@@ -5,6 +5,7 @@ Dealer::Dealer(bool softHit)
 {
     cards.reserve(10);
     hand = 0;
+    isSoftHand = false;
 }
 
 unsigned short Dealer::getHand()
