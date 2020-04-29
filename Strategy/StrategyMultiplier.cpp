@@ -1,19 +1,18 @@
 #include "StrategyMultiplier.hpp"
+#include <cmath>
 
 StrategyMultiplier::StrategyMultiplier()
     : Strategy()
-{   // default, so the levels are TC [-2 | 2]
-    multipliers.push_back(0);
-    multipliers.push_back(1);
-    multipliers.push_back(2);
+{
+    levels = {-2, 2};
+    multipliers = {0, 1, 2};
 }
 
 unsigned StrategyMultiplier::getBet(double trueCount, unsigned budget, int streak)
 {
     unsigned i = 0;
     bool found = false;
-
-    while (!found && i < multipliers.size())
+    while (!found && i < levels.size())
     {
         if (trueCount > levels[i])
         {
@@ -24,5 +23,5 @@ unsigned StrategyMultiplier::getBet(double trueCount, unsigned budget, int strea
             found = true;
         }
     }
-    return this->stopStrategy.getBet(budget,floor(multipliers[i]*2),consecutiveLosses(streak));
+    return this->stopStrategy.getBet(budget, floor(multipliers[i]*2), consecutiveLosses(streak));
 }
