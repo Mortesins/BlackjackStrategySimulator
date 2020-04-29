@@ -2,8 +2,8 @@
 
 StrategySequence::StrategySequence()
     : Strategy()
-{   // default, so the levels are TC [-2 | 2]
-
+{
+    levels = {-2, 2};
     // this constructor is for testing only, there is no purpose in having a default
 
     // bettingStrategies[0] has vector of bets for first level (so for TC < -2)

@@ -11,6 +11,7 @@ class StrategySequence
     : public Strategy
 {
   private:
+    std::vector<double> levels;
     std::vector<std::vector<unsigned> > bettingStrategies;
     std::vector<unsigned> levelCounters;
   public:
