@@ -1,11 +1,12 @@
 #include "Table.hpp"
+#include "CountingSystems/HiOpt1.hpp"
 
 Table::Table()
     : dealer(false),shoe(6,0.3),americanDealer(false)
 {
    players.push_back(new PlayerSeat());
    rules = new Rules();
-   countingSystem = new CountingSystem();
+   countingSystem = new HiOpt1();
    runningCount = 0;
    print = false;
 }
@@ -15,7 +16,7 @@ Table::Table(bool p)
 {
    players.push_back(new PlayerSeat());
    rules = new Rules();
-   countingSystem = new CountingSystem();
+   countingSystem = new HiOpt1();
    runningCount = 0;
    print = p;
 }
@@ -25,7 +26,7 @@ Table::Table(bool p, unsigned numberOfDecks)
 {
    players.push_back(new PlayerSeat());
    rules = new Rules();
-   countingSystem = new CountingSystem();
+   countingSystem = new HiOpt1();
    runningCount = 0;
    print = p;
 }
@@ -35,7 +36,7 @@ Table::Table(bool p, unsigned numberOfDecks, const std::vector<unsigned short> &
 {
    players.push_back(new PlayerSeat());
    rules = new Rules();
-   countingSystem = new CountingSystem();
+   countingSystem = new HiOpt1();
    runningCount = 0;
    print = p;
 }

@@ -1,6 +1,6 @@
-#include "CountingSystem.hpp"
+#include "HiOpt1.hpp"
 
-int CountingSystem::cardValue(unsigned short card)
+int HiOpt1::cardValue(unsigned short card)
 {
     if (card == 10)
     {
