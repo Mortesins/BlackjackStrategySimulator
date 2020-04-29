@@ -23,12 +23,20 @@ Strategy/Strategy_all.o: $(shell find Strategy/ | grep ".cpp\|.hpp")
 
 Tests/testDealer: Tests/TestDealer.cpp Dealer.o
 	g++ -Wall -o Tests/testDealer Tests/TestDealer.cpp Dealer.o -lgtest -lgtest_main -lpthread
+Tests/testRules: Tests/TestRules.cpp Rules.o Action.o
+	g++ -Wall -o Tests/testRules Tests/TestRules.cpp Rules.o Action.o -lgtest -lgtest_main -lpthread
 
 clean:
 	$(MAKE) -C Strategy/ clean
 	rm *.o || echo "Already removed *.o"
 	rm *.gch || echo "Already removed *.gch"
-test: Tests/testDealer
+cleantest:
+	$(MAKE) -C Strategy/ cleantest
+	rm Tests/test*
+cleanall:
+	$(MAKE) clean
+	$(MAKE) cleantest
+test: Tests/testDealer Tests/testRules
 	chmod u+x Tests/test*
 	for i in `ls Tests | grep test`; do ./Tests/$$i; done
 testall:

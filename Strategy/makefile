@@ -37,3 +37,5 @@ test: Tests/testBasicPlayingStrategy Tests/testIndexedPlayingStrategy Tests/test
 	for i in `ls Tests | grep test`; do ./Tests/$$i; done
 clean:
 	rm *.o || echo "Already removed *.o"
+cleantest:
+	rm Tests/test*
