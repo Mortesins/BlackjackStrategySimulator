@@ -24,11 +24,13 @@ Tests/testBasicPlayingStrategy: Tests/TestBasicPlayingStrategy.cpp BasicPlayingS
 	g++ -Wall -o Tests/testBasicPlayingStrategy Tests/TestBasicPlayingStrategy.cpp  BasicPlayingStrategy.o PlayingStrategy.o ../Action.cpp -lgtest -lgtest_main -lpthread
 Tests/testIndexedPlayingStrategy: Tests/TestIndexedPlayingStrategy.cpp IndexedPlayingStrategy.o
 	g++ -Wall -o Tests/testIndexedPlayingStrategy Tests/TestIndexedPlayingStrategy.cpp IndexedPlayingStrategy.o BasicPlayingStrategy.o PlayingStrategy.o ../Action.cpp -lgtest -lgtest_main -lpthread
+Tests/testStopStrategy: Tests/TestStopStrategy.cpp StopStrategy.o
+	g++ -Wall -o Tests/testStopStrategy Tests/TestStopStrategy.cpp  StopStrategy.o -lgtest -lgtest_main -lpthread
 
 all: Strategy_all.o
 #test: StrategyTest.cpp Strategy_all.o
 #	g++ -Wall -o prova StrategyTest.cpp Strategy_all.o
-test: Tests/testBasicPlayingStrategy Tests/testIndexedPlayingStrategy
+test: Tests/testBasicPlayingStrategy Tests/testIndexedPlayingStrategy Tests/testStopStrategy
 	chmod u+x Tests/test*
 	for i in `ls Tests | grep test`; do ./Tests/$$i; done
 clean:

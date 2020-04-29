@@ -25,8 +25,7 @@ class Strategy
 {
   protected:
     string name;
-    std::vector<double> levels;
-    std::vector<PlayingStrategy*> playingStrategies;
+    PlayingStrategy* playingStrategy;
     StopStrategy stopStrategy;
 
     unsigned consecutiveLosses(int streak);

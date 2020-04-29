@@ -1,82 +1,58 @@
 #include "StopStrategy.hpp"
-#include <iostream>
+#include <cmath>
 
-StopStrategy::StopStrategy(unsigned stopAt, int numberOfLosses)
+StopStrategy::StopStrategy(unsigned stopAtBudget, unsigned stopAtNumberOfLosses)
 {
-    this->stopAt = stopAt;
-    this->numberOfLosses = numberOfLosses;
+    this->stopAtBudget = stopAtBudget;
+    this->stopAtNumberOfLosses = stopAtNumberOfLosses;
 }
 
-StopStrategy::StopStrategy(unsigned budget, double percentageOverBudget, unsigned numberOfLosses)
-{
-    stopAt = (unsigned)round( budget * ( 1 + percentageOverBudget / 100.0 ) );
-    this->stopAt = stopAt;
-    this->numberOfLosses = numberOfLosses;
-}
+StopStrategy::StopStrategy(unsigned budget, double percentageOverBudget, unsigned stopAtNumberOfLosses)
+    : StopStrategy::StopStrategy((unsigned) round(budget * (1 + percentageOverBudget / 100.0)), stopAtNumberOfLosses)
+{}
 
 StopStrategy::StopStrategy()
-{
-    this->stopAt = 24;
-    this->numberOfLosses = 2;
-}
+    : StopStrategy::StopStrategy(24, 2)
+{}
 
-StopStrategy::StopStrategy(unsigned stopAt)
+unsigned StopStrategy::getBet(unsigned budget, unsigned bet, unsigned consecutiveLosses) const
 {
-    this->stopAt = stopAt;
-    this->numberOfLosses = 2;
-}
-
-StopStrategy::StopStrategy(unsigned budget, float percentageOverBudget)
-{
-    stopAt = (unsigned)round( budget * ( 1 + percentageOverBudget / 100.0 ) );
-    this->stopAt = stopAt;
-    this->numberOfLosses = 2;
-}
-
-unsigned StopStrategy::canPlaceBet(unsigned budget, unsigned bet, unsigned consecutiveLosses) const
-{
-    if (budget < stopAt || consecutiveLosses == 0)
+    if (budget < stopAtBudget || consecutiveLosses == 0)
     {
         return bet;
     }
-    else if (consecutiveLosses < numberOfLosses) // it's like consecutiveLosses == 1 when numberOfLosses=2
+    else if (consecutiveLosses < stopAtNumberOfLosses) // it's like consecutiveLosses == 1 when stopAtNumberOfLosses=2
     {
-        if (budget == stopAt)
+        if (budget == stopAtBudget)
         {
             return 0; //stop
         }
-        else if (budget - bet < stopAt)
+        else if (budget - bet < stopAtBudget)
         {
-            return (budget - stopAt);
+            return (budget - stopAtBudget);
         }
         else
         {
             return bet;
         }
     }
-    else if (consecutiveLosses == numberOfLosses)
+    else if (consecutiveLosses >= stopAtNumberOfLosses)
     {
         return 0; //stop
     }
     else
     {
-        std::cout << "StopStrategy::canPlaceBet";
-        throw "StopStrategy::canPlaceBet";
+        throw "StopStrategy::getBet";
     }
 }
 
 bool StopStrategy::canSplit(unsigned budget, unsigned bet) const
 {
-    return true;
-}
-
-bool StopStrategy::canDouble(unsigned budget, unsigned bet) const
-{
-    if (budget < stopAt)
+    if (budget < stopAtBudget)
     {
         return true;
     }
-    else if (budget == stopAt || budget - bet < stopAt)
+    if (budget == stopAtBudget || budget - bet < stopAtBudget)
     {
         return false;
     }
@@ -84,4 +60,9 @@ bool StopStrategy::canDouble(unsigned budget, unsigned bet) const
     {
         return true;
     }
+}
+
+bool StopStrategy::canDouble(unsigned budget, unsigned bet) const
+{
+    return canSplit(budget, bet);  // same logic
 }

@@ -67,5 +67,5 @@ unsigned StrategySequence::getBet(double trueCount, unsigned budget, int streak)
         betIndex = bettingStrategies[i].size() - 1;
     }
     /******************************************************/
-    return this->stopStrategy.canPlaceBet(budget,bettingStrategies[i][betIndex],consecutiveLosses(streak));
+    return this->stopStrategy.getBet(budget,bettingStrategies[i][betIndex],consecutiveLosses(streak));
 }

@@ -24,5 +24,5 @@ unsigned StrategyMultiplier::getBet(double trueCount, unsigned budget, int strea
             found = true;
         }
     }
-    return this->stopStrategy.canPlaceBet(budget,floor(multipliers[i]*2),consecutiveLosses(streak));
+    return this->stopStrategy.getBet(budget,floor(multipliers[i]*2),consecutiveLosses(streak));
 }
