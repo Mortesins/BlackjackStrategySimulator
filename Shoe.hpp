@@ -1,11 +1,8 @@
 #ifndef SHOE_HPP
 #define SHOE_HPP
 
-#include <cstdlib>
-#include <ctime>
-#include <sys/time.h>
 #include <vector>
-#include <string>
+
 
 class Shoe
 {

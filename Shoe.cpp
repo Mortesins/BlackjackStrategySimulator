@@ -1,123 +1,76 @@
 #include "Shoe.hpp"
 
+#include <cstdlib>
+#include <ctime>
+#include <sys/time.h>
+#include <algorithm>
+
 Shoe::Shoe(unsigned numberOfDecks, double penetration)
 {
     this->numberOfDecks = numberOfDecks;
     this->penetration = penetration;
+    cards.reserve(numberOfDecks * 13 * 4);
     shuffle();
 }
 
-Shoe::Shoe(unsigned numberOfDecks, const std::vector<unsigned short> & cardsToRemove)
+Shoe::Shoe(unsigned numberOfDecks, const std::vector<unsigned short>& cardsToRemove)
 {
     this->numberOfDecks = numberOfDecks;
     this->penetration = penetration;
     shuffleAndRemoveCards(cardsToRemove);
 }
 
-void Shoe::shuffleAndRemoveCards(const std::vector<unsigned short> & cardsToRemove)
-{
-    // empty deck
-    cards.clear();
-    /*** fill decks as usual ***/
-    unsigned numberOfCards = 13*4*numberOfDecks;
-    std::vector<unsigned short> tmp;
-    for (unsigned i = 0; i < 13*4*numberOfDecks; ++i)
-    {
-        tmp.push_back(1 + (i % 13));
-    }
-    /***************************/
-    /*** remove cards ***/
-    unsigned j = 0;
-    for (unsigned i = 0; i < cardsToRemove.size(); i++)
-    {
-        // find the card to remove
-        while (cardsToRemove[i] != tmp[j] && j < tmp.size())
-        {
-            ++j;
-        }
-        // remove the card
-        tmp.erase( tmp.begin() + j);
-        --numberOfCards;
-        j = 0; // restart searching from the beginning of the cards
-    }
-    /********************/
-    /*** shuffle ***/
-    timeval t1;
-    gettimeofday(&t1, NULL);
-    srand(t1.tv_usec * t1.tv_sec);
-    unsigned r;
-    unsigned short c;
-
-    for (unsigned i=0; i < numberOfCards; ++i)
-    {
-        r = rand() % numberOfCards; // random number from 0 to numberOfCards-1
-        c = tmp[r]; // random card
-        if (c > 0)
-        {
-            cards.push_back((c % 10) * (1 - c / 10) + ((c / 10) * 10));
-            tmp[r] = 0;
-        }
-        else
-        {
-            --i;
-        }
-    }
-    /***************/
-
-    // remove the first card (end of deck)
-    cards.erase(cards.begin() + cards.size() - 1);
-}
-
 void Shoe::shuffle()
 {
-    /*** empty deck before refilling it ***/
-    while (cards.size() > 0)
-    {
-        cards.pop_back();
-    }
-    /*** empty deck before refilling it ***/
+    cards.clear();
     unsigned numberOfCards = 13*4*numberOfDecks;
-    unsigned short tmp[numberOfCards];
-    for (unsigned i=0; i < 13*4*numberOfDecks; ++i)
+    unsigned short orderedDecks[numberOfCards];
+    std::vector<unsigned> cardIndices;
+    cardIndices.reserve(numberOfCards);
+    for (unsigned i=0; i < numberOfCards; ++i)
     {
-        tmp[i] = 1 + (i % 13);
+        orderedDecks[i] = 1 + (i % 13);
+        cardIndices.push_back(i);
     }
     /*** seed rand ***/
     timeval t1;
     gettimeofday(&t1, NULL);
     srand(t1.tv_usec * t1.tv_sec);
     /*****************/
-    unsigned r;
-    unsigned short c;
+    unsigned randomIndex;
+    unsigned short pickedCard;
 
     for (unsigned short i=0; i < numberOfCards; ++i)
     {
-        r = rand() % numberOfCards; // random number from 0 to numberOfCards-1
-        c = tmp[r]; // random card
-        if (c > 0)
-        {
-            cards.push_back((c % 10) * (1 - c / 10) + ((c / 10) * 10));
-            tmp[r] = 0;
-        }
-        else
-        {
-            --i;
-        }
+        randomIndex = rand() % cardIndices.size(); // random number from 0 to cardIndices.size() - 1
+        pickedCard = orderedDecks[cardIndices[randomIndex]]; // random card
+        cardIndices.erase(cardIndices.begin() + randomIndex); // remove that index so I don't pick it again
+        // pickedCard / 10 can be either 0 for 1 to 9 or 1 for 10, 11, 12, 13
+        // I want pickedCard % 10 for 1 to 9, and 10 for 10, 11, 12, 13
+        cards.push_back((pickedCard % 10) * (1 - pickedCard / 10) + ((pickedCard / 10) * 10));
     }
-    // remove the first card (end of deck)
-    cards.erase(cards.begin() + cards.size() - 1);
+}
+
+void Shoe::shuffleAndRemoveCards(const std::vector<unsigned short>& cardsToRemove)
+{
+    shuffle();
+    for (unsigned i = 0; i < cardsToRemove.size(); ++i)
+    {
+        std::vector<unsigned short>::iterator matchIndex = std::find(cards.begin(), cards.end(), cardsToRemove[i]);
+        cards.erase(matchIndex);
+    }
 }
 
 unsigned short Shoe::getCard()
 {
-    unsigned short card=cards[cards.size()-1];
+    unsigned short card = cards[cards.size()-1];
     cards.pop_back();
     return card;
 }
 
 double Shoe::decksRemaining()
 {
-    return cards.size() / (float)(52);
+    return cards.size() / 52.0;
 }
 
 unsigned Shoe::cardsRemaining()
@@ -127,28 +80,5 @@ unsigned Shoe::cardsRemaining()
 
 bool Shoe::isFinished()
 {
-    return decksRemaining() < (1-penetration);
+    return decksRemaining() < (1 - penetration);
 }
-
-/******************* TESTING *******************/
-//#include <iostream>
-//void Shoe::printDeck()
-//{
-    //unsigned i = 0;
-    //while (i < cards.size() - 10)
-    //{
-        //for (unsigned j = 0; j < 10 - 1; j++)
-        //{
-            //std::cout << cards[i] << ",";
-            //i++;
-        //}
-        //std::cout << cards[i] << std::endl;
-        //i++;
-    //}
-    //while (i < cards.size() - 1)
-    //{
-        //std::cout << cards[i] << ",";
-        //i++;
-    //}
-    //std::cout << cards[i] << std::endl;
-//}

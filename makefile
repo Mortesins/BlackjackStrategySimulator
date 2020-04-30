@@ -25,6 +25,8 @@ Tests/testDealer: Tests/TestDealer.cpp Dealer.o
 	g++ -Wall -o Tests/testDealer Tests/TestDealer.cpp Dealer.o -lgtest -lgtest_main -lpthread
 Tests/testRules: Tests/TestRules.cpp Rules.o Action.o
 	g++ -Wall -o Tests/testRules Tests/TestRules.cpp Rules.o Action.o -lgtest -lgtest_main -lpthread
+Tests/testShoe: Tests/TestShoe.cpp Shoe.o
+	g++ -Wall -o Tests/testShoe Tests/TestShoe.cpp Shoe.o -lgtest -lgtest_main -lpthread
 
 clean:
 	$(MAKE) -C Strategy/ clean
@@ -36,7 +38,7 @@ cleantest:
 cleanall:
 	$(MAKE) clean
 	$(MAKE) cleantest
-test: Tests/testDealer Tests/testRules
+test: Tests/testDealer Tests/testRules Tests/testShoe
 	chmod u+x Tests/test*
 	for i in `ls Tests | grep test`; do ./Tests/$$i; done
 testall:
