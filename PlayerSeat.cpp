@@ -2,7 +2,7 @@
 
 PlayerSeat::PlayerSeat()
 {
-    player = new Player("gigi",this);
+    player = new Player("gigi", this);
     streak = 0;
     insurance = 0;
 }

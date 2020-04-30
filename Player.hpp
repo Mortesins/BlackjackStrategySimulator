@@ -47,7 +47,7 @@ class Player
     void receiveMoney(unsigned m);
 
 /****************************/
-    unsigned returnMoney();
+    unsigned getMoney();
 /***************************/
 };
 

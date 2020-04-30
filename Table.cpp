@@ -31,7 +31,7 @@ Table::Table(bool p, unsigned numberOfDecks)
    print = p;
 }
 
-Table::Table(bool p, unsigned numberOfDecks, const std::vector<unsigned short> & cardsToRemove)
+Table::Table(bool p, unsigned numberOfDecks, const std::vector<unsigned short>& cardsToRemove)
     : dealer(false),shoe(numberOfDecks,cardsToRemove),americanDealer(false)
 {
    players.push_back(new PlayerSeat());
@@ -467,7 +467,7 @@ void Table::playRound()
     }
     if (print)
     {
-        std::cout << "Player Money: " << players[0]->player->returnMoney() << std::endl;
+        std::cout << "Player Money: " << players[0]->player->getMoney() << std::endl;
     }
     trashCardsAndEmptyPots();
 }
@@ -522,10 +522,10 @@ unsigned Table::playHandTest(unsigned short dealerUpCard, unsigned short playerC
     }
     if (print)
     {
-        std::cout << "Player Money: " << players[0]->player->returnMoney() << std::endl;
+        std::cout << "Player Money: " << players[0]->player->getMoney() << std::endl;
     }
     trashCardsAndEmptyPots();
-    return players[0]->player->returnMoney();
+    return players[0]->player->getMoney();
 }
 
 void Table::distributeCardsSpecificHand(unsigned short dealerUpCard, unsigned short playerCard1, unsigned short playerCard2)
@@ -602,7 +602,7 @@ void Table::playRoundTest()
     }
     if (print)
     {
-        std::cout << "Player Money: " << players[0]->player->returnMoney() << std::endl;
+        std::cout << "Player Money: " << players[0]->player->getMoney() << std::endl;
     }
     trashCardsAndEmptyPots();
 }

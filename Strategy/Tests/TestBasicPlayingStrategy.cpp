@@ -85,6 +85,16 @@ TEST(BasicPlayingStrategyTest, TestGetPlayWithSplitNotAllowed)
     EXPECT_EQ(Action::STAND, p.getPlay(std::vector<unsigned short>{9,9}, 10, notAllowedActions));
 }
 
+TEST(BasicPlayingStrategyTest, TestGetPlayWithOnlyStandAllowed)
+{
+    BasicPlayingStrategy p;
+    std::vector<Action> notAllowedActions{Action::HIT, Action::SPLIT, Action::DOUBLEDOWN, Action::SURRENDER};
+    EXPECT_EQ(Action::STAND, p.getPlay(std::vector<unsigned short>{7,7}, 6, notAllowedActions));
+    EXPECT_EQ(Action::STAND, p.getPlay(std::vector<unsigned short>{1,8}, 6, notAllowedActions));
+    EXPECT_EQ(Action::STAND, p.getPlay(std::vector<unsigned short>{1,9}, 2, notAllowedActions));
+    EXPECT_EQ(Action::STAND, p.getPlay(std::vector<unsigned short>{4,2,4,2}, 10, notAllowedActions));
+}
+
 int main(int argc, char **argv) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

@@ -6,7 +6,7 @@ Player::Player(string n, PlayerSeat* ps)
     : name(n), playerSeat(ps)
 {
     strategy = new StrategyMultiplier();
-    money = 200000;
+    money = 1000;
 }
 
 unsigned Player::getBet(double trueCount, int streak)
@@ -67,7 +67,7 @@ void Player::receiveMoney(unsigned m)
     money += m;
 }
 
-unsigned Player::returnMoney()
+unsigned Player::getMoney()
 {
     return money;
 }

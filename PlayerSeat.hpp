@@ -3,7 +3,6 @@
 
 #include "Player.hpp"
 #include <vector>
-// for ostream
 #include <iostream>
 
 class Player;
@@ -14,7 +13,7 @@ class PlayerSeat
     unsigned insurance;
     int streak; // Wins > 0, Losses < 0
     std::vector<unsigned> pot;
-    std::vector<std::vector<unsigned short> > cards;
+    std::vector<std::vector<unsigned short>> cards;
     Player* player;
 
     PlayerSeat();

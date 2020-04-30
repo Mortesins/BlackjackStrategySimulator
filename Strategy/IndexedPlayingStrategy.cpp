@@ -1,4 +1,5 @@
 #include "IndexedPlayingStrategy.hpp"
+#include "StrategyExpections.hpp"
 
 IndexedPlayingStrategy::IndexedPlayingStrategy()
 {
@@ -87,5 +88,8 @@ Action IndexedPlayingStrategy::getPlay(
             return secondAction;
         }
     }
-    throw "Looped through all possible action but no action found in getPlay. Something went wrong!";
+    throw StrategyError(
+        "IndexedPlayingStrategy::getPlay():\n"
+        "\t\t\tLooped through all possible actions but no action found in getPlay. Something went wrong!"
+    );
 }

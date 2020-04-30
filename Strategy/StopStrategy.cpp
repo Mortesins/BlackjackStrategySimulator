@@ -1,4 +1,5 @@
 #include "StopStrategy.hpp"
+#include "StrategyExpections.hpp"
 #include <cmath>
 
 StopStrategy::StopStrategy(unsigned stopAtBudget, unsigned stopAtNumberOfLosses)
@@ -42,7 +43,7 @@ unsigned StopStrategy::getBet(unsigned budget, unsigned bet, unsigned consecutiv
     }
     else
     {
-        throw "StopStrategy::getBet";
+        throw StrategyError("StopStrategy::getBet(): Should never get here!");
     }
 }
 

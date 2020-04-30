@@ -1,4 +1,5 @@
 #include "BasicPlayingStrategy.hpp"
+#include "StrategyExpections.hpp"
 
 BasicPlayingStrategy::BasicPlayingStrategy()
 {
@@ -411,5 +412,5 @@ Action BasicPlayingStrategy::getPlay(
             return action;
         }
     }
-    throw "Looped through all possible action but no action found in getPlay. Something went wrong!";
+    return Action::STAND;
 }
