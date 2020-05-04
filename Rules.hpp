@@ -8,15 +8,15 @@
 class Rules
 {
   private:
+    const bool bjBjPush;
     bool aces;
     unsigned handsAfterAceSplit;
-    bool bjBjPush;
     std::vector<Action> actionsNotAllowedTemplate; // Contains never allowed actions plus SPLIT which can be removed
   public:
     Rules();
 
     std::vector<Action> getActionsNotAllowed(const std::vector<std::vector<unsigned short>>& cards, unsigned handIndex);
-    bool blackjackBlackjackPush();
+    bool blackjackBlackjackPush() const;
 };
 
 #endif

@@ -31,6 +31,9 @@ double testHand(
 
 int main()
 {
-    testHand(1000000, 1, 1, 1);
+    //testHand(1000000, 1, 1, 1);
+    Table t(true, 6);
+    while (t.playRound())
+    {}
     return 0;
 }

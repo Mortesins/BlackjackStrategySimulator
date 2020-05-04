@@ -42,10 +42,10 @@ ostream& operator<<(ostream& os, const PlayerSeat& ps)
 {
     os << "Player Seat:" << std::endl;
     os << *(ps.player);
-    os << "\tPots:\t";
-    unsigned i = 0;
     if (ps.pot.size() != 0)
     {
+        os << "\tPots:\t";
+        unsigned i = 0;
         while (i < ps.pot.size() - 1)
         {
             os << ps.pot[i] << "\t\t";
@@ -55,22 +55,3 @@ ostream& operator<<(ostream& os, const PlayerSeat& ps)
     }
     return os;
 }
-/*** TEST const std::vector< std::vector<unsigned short> > & ***/
-/*int main()
-{
-    // TEST const std::vector< std::vector<unsigned short> > & //
-    PlayerSeat ps;
-    std::vector<unsigned short> tmp;
-    tmp.push_back(0);
-    tmp.push_back(2);
-    tmp.push_back(3);
-    ps.cards.push_back(tmp);
-    tmp.pop_back();
-    ps.cards.push_back(tmp);
-    ps.player->prova();
-    ps.cards[0][0] = 10;
-    ps.player->prova();
-    /////////////////////////////////////////////////////
-    return 0;
-}*/
-/*******************************************************/

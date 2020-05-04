@@ -1,10 +1,10 @@
 #include "Rules.hpp"
 
 Rules::Rules()
+    : bjBjPush(true)
 {
     aces = false;
     handsAfterAceSplit = 0;
-    bjBjPush = true;
     actionsNotAllowedTemplate = {Action::SPLIT, Action::SURRENDER};
 }
 
@@ -62,7 +62,7 @@ std::vector<Action> Rules::getActionsNotAllowed(
     return actionsNotAllowedTemplate;
 }
 
-bool Rules::blackjackBlackjackPush()
+bool Rules::blackjackBlackjackPush() const
 {
     return bjBjPush;
 }

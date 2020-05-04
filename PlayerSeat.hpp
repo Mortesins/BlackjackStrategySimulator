@@ -5,8 +5,6 @@
 #include <vector>
 #include <iostream>
 
-class Player;
-
 class PlayerSeat
 {
   public:
@@ -22,5 +20,5 @@ class PlayerSeat
     void updateStreakLose();
 };
 
-ostream& operator<<(ostream& os, const PlayerSeat& ps);
+std::ostream& operator<<(std::ostream& os, const PlayerSeat& ps);
 #endif

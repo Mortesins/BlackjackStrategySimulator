@@ -1,9 +1,10 @@
 #include "../StrategyMultiplier.hpp"
 #include <gtest/gtest.h>
+#include "../../Constants.hpp"
 
 namespace
 {
-    unsigned BUDGET = 30;  // Above stopAtBudget
+    unsigned BUDGET = 30*MINIMUM_BET;  // Above stopAtBudget
 }
 
 TEST(StrategyMultiplier, WhenStreakIsZeroThenGetBetReturnsBasedOnMultipliers)

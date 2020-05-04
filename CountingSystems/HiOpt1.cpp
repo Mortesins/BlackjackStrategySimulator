@@ -1,6 +1,6 @@
 #include "HiOpt1.hpp"
 
-int HiOpt1::cardValue(unsigned short card)
+int HiOpt1::cardValue(unsigned short card) const
 {
     if (card == 10)
     {

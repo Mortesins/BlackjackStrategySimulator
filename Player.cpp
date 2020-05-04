@@ -1,12 +1,14 @@
 #include "Player.hpp"
 
 #include "Strategy/StrategyMultiplier.hpp"
+#include "PlayerSeat.hpp"
+#include "Constants.hpp"
 
 Player::Player(string n, PlayerSeat* ps)
     : name(n), playerSeat(ps)
 {
     strategy = new StrategyMultiplier();
-    money = 1000;
+    money = 20*MINIMUM_BET;
 }
 
 unsigned Player::getBet(double trueCount, int streak)
@@ -48,20 +50,6 @@ unsigned Player::payMoney(unsigned m)
     return m;
 }
 
-int Player::inPlay()
-{
-    if (playerSeat->cards.size() == 0 && money < 2)
-    {
-        return -1;
-    }
-//  if (strategy.getBet() == 0)     /*disabled to keep playing and use up cards*/
-//      return 0;
-    else
-    {
-        return 1;
-    }
-}
-
 void Player::receiveMoney(unsigned m)
 {
     money += m;
@@ -76,34 +64,37 @@ ostream& operator<<(ostream& os, const Player& p)
 {
     os << "\tName:\t" << p.name << std::endl;
     os << "\tBudget:\t" << p.money << std::endl;
-    os << "\tCards:\t";
-    unsigned j = 0;
-    for (unsigned i = 0; i < p.playerSeat->cards.size(); ++i)
+    if (p.playerSeat->cards.size() > 0)
     {
-        j = 0;
-        if (p.playerSeat->cards[i].size() != 0)
+        os << "\tCards:\t";
+        unsigned j = 0;
+        for (unsigned i = 0; i < p.playerSeat->cards.size(); ++i)
         {
-            while (j < (p.playerSeat->cards[i].size() - 1) ) // FOR SOME REASON THE WHILE LOOP COULD NOT CHECK SIZE() > 0 --> so the outer if was put
+            j = 0;
+            if (p.playerSeat->cards[i].size() != 0)
             {
-                if (p.playerSeat->cards[i][j] == 1)
+                while (j < (p.playerSeat->cards[i].size() - 1) ) // FOR SOME REASON THE WHILE LOOP COULD NOT CHECK SIZE() > 0 --> so the outer if was put
                 {
-                    os << "A-";
+                    if (p.playerSeat->cards[i][j] == 1)
+                    {
+                        os << "A-";
+                    }
+                    else
+                    {
+                        os << p.playerSeat->cards[i][j] << "-";
+                    }
+                    j++;
                 }
-                else
+                if (p.playerSeat->cards[i].size() > 0)
                 {
-                    os << p.playerSeat->cards[i][j] << "-";
-                }
-                j++;
-            }
-            if (p.playerSeat->cards[i].size() > 0)
-            {
-                if (p.playerSeat->cards[i][j] == 1)
-                {
-                    os << "A\t\t";
-                }
-                else
-                {
-                    os << p.playerSeat->cards[i][j] << "\t\t";
+                    if (p.playerSeat->cards[i][j] == 1)
+                    {
+                        os << "A\t\t";
+                    }
+                    else
+                    {
+                        os << p.playerSeat->cards[i][j] << "\t\t";
+                    }
                 }
             }
         }
@@ -111,12 +102,3 @@ ostream& operator<<(ostream& os, const Player& p)
     os << std::endl;
     return os;
 }
-
-/*** PRINTOUT CARDS ***\
-#include <iostream>
-void Player::prova()
-{
-    std::cout << cards[0][0] << " " << cards[0][1] << " " << cards[0][2] << std::endl;
-    std::cout << cards[1][0] << " " << cards[1][1] << std::endl;
-}
-\**********************/

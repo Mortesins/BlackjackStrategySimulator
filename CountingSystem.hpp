@@ -4,7 +4,7 @@
 class CountingSystem
 {
   public:
-    virtual int cardValue(unsigned short card) = 0;
+    virtual int cardValue(unsigned short card) const = 0;
 };
 
 #endif

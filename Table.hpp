@@ -3,30 +3,29 @@
 
 #include <vector>
 
-#include "PlayerSeat.hpp"
 #include "Shoe.hpp"
 #include "Dealer.hpp"
-#include "Rules.hpp"
-#include "CountingSystem.hpp"
 // for printDealerAndCardsRemaining()
 #include <iostream>
+
+class Rules;
+class CountingSystem;
+class PlayerSeat;
 
 class Table
 {
   private:
+    const bool print;
+    const bool americanDealer;
+    const CountingSystem* countingSystem;
+
     std::vector<PlayerSeat*> players;
     Dealer dealer;
     Shoe shoe;
     Rules* rules;
-    CountingSystem* countingSystem;
     int runningCount;
-    unsigned betSize;
-    const bool americanDealer;
 
-    bool print;
-
-    bool playersInPlay();
-    void placeBets();
+    bool placeBets();
     void distributeCards();
 /**** TESTING ****/
     void distributeCardsSplit();
@@ -37,7 +36,7 @@ class Table
     void playerPlay(unsigned playerIndex, unsigned handIndex = 0);
     void split(unsigned playerIndex, unsigned handIndex = 0);
     void doubleDown(unsigned playerIndex, unsigned handIndex = 0);
-    bool checkPlayerBust(unsigned playerIndex, unsigned handIndex = 0);
+    bool isPlayerBust(PlayerSeat* const playerSeat, unsigned handIndex = 0);
     void dealerPlay();
     bool checkDealerBlackjack();
     void giveCollectMoney();
@@ -45,17 +44,21 @@ class Table
 
     double trueCount();
     bool isMultipleOfBetSize(unsigned bet);
-    unsigned short getCard(bool countCard = true);
-    unsigned handValue(unsigned playerIndex, unsigned handIndex);
-    bool blackjack(unsigned playerIndex, unsigned handIndex);
+    unsigned short getCard();
+    unsigned short getCardWithoutCounting();
+    bool blackjack(PlayerSeat* const playerSeat, unsigned handIndex);
   public:
 
     Table();
-    Table(bool p);
-    Table(bool p, unsigned numberOfDecks);
-    Table(bool p, unsigned numberOfDecks, const std::vector<unsigned short> & cardsToRemove);
+    Table(bool print);
+    Table(bool print, unsigned numberOfDecks);
+    Table(bool print, unsigned numberOfDecks, const std::vector<unsigned short> & cardsToRemove);
 
-    void playRound();
+    /**
+     * Plays round.
+     * Returns true if round played and false if no player placed a bet
+     */
+    bool playRound();
 /****** TEST CERTAIN HAND *******/
     unsigned playHandTest(unsigned short dealerUpCard, unsigned short playerCard1, unsigned short playerCard2);
     void distributeCardsSpecificHand(unsigned short dealerUpCard, unsigned short playerCard1, unsigned short playerCard2);
@@ -65,8 +68,11 @@ class Table
 /******************/
     void printDealerAndCardsRemaining();
     void printDealerUpCardAndCardsRemaining();
+    void printDealerUpCardAndCardsRemainingAndTrueCount();
     void printPlayerSeats();
 
 };
 
+
+unsigned getHandValue(PlayerSeat* const playerSeat, unsigned handIndex);
 #endif

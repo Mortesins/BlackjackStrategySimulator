@@ -1,5 +1,5 @@
-all: Test.cpp Table.o
-	g++ -Wall -o prova Test.cpp Table_all.o Player.o Strategy/Strategy_all.o
+all: Test.cpp Table.o Player.o Constants.o Strategy/Strategy_all.o
+	g++ -Wall -o prova Test.cpp Table_all.o Player.o Constants.o Strategy/Strategy_all.o
 
 Table.o: Table.cpp Table.hpp PlayerSeat.o Shoe.o Dealer.o Rules.o HiOpt1.o Action.o
 	g++ -g -Wall -c Table.cpp
@@ -16,7 +16,9 @@ HiOpt1.o: CountingSystems/HiOpt1.cpp CountingSystems/HiOpt1.hpp
 	g++ -Wall -c CountingSystems/HiOpt1.cpp -o CountingSystems/HiOpt1.o
 Action.o: Action.cpp Action.hpp
 	g++ -Wall -c Action.cpp
-Player.o: Player.cpp Player.hpp Strategy/Strategy_all.o
+Constants.o: Constants.cpp Constants.hpp
+	g++ -g -Wall -c Constants.cpp
+Player.o: Player.cpp Player.hpp
 	g++ -g -Wall -c Player.cpp
 Strategy/Strategy_all.o: $(shell find Strategy/ | grep ".cpp\|.hpp")
 	$(MAKE) -C Strategy/
@@ -27,6 +29,8 @@ Tests/testRules: Tests/TestRules.cpp Rules.o Action.o
 	g++ -Wall -o Tests/testRules Tests/TestRules.cpp Rules.o Action.o -lgtest -lgtest_main -lpthread
 Tests/testShoe: Tests/TestShoe.cpp Shoe.o
 	g++ -Wall -o Tests/testShoe Tests/TestShoe.cpp Shoe.o -lgtest -lgtest_main -lpthread
+Tests/testTable: Tests/TestTable.cpp Table.o Player.o Constants.o Strategy/Strategy_all.o
+	g++ -Wall -o Tests/testTable Tests/TestTable.cpp Table_all.o Strategy/Strategy_all.o Player.o Constants.o -lgtest -lgtest_main -lpthread
 
 clean:
 	$(MAKE) -C Strategy/ clean
@@ -38,7 +42,7 @@ cleantest:
 cleanall:
 	$(MAKE) clean
 	$(MAKE) cleantest
-test: Tests/testDealer Tests/testRules Tests/testShoe
+test: Tests/testDealer Tests/testRules Tests/testShoe Tests/testTable
 	chmod u+x Tests/test*
 	for i in `ls Tests | grep test`; do ./Tests/$$i; done
 testall:

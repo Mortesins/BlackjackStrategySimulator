@@ -1,6 +1,9 @@
 #include "StopStrategy.hpp"
 #include "StrategyExpections.hpp"
+#include "../Constants.hpp"
 #include <cmath>
+
+#include <iostream>
 
 StopStrategy::StopStrategy(unsigned stopAtBudget, unsigned stopAtNumberOfLosses)
 {
@@ -13,12 +16,16 @@ StopStrategy::StopStrategy(unsigned budget, double percentageOverBudget, unsigne
 {}
 
 StopStrategy::StopStrategy()
-    : StopStrategy::StopStrategy(24, 2)
+    : StopStrategy::StopStrategy(24*MINIMUM_BET, 2)
 {}
 
 unsigned StopStrategy::getBet(unsigned budget, unsigned bet, unsigned consecutiveLosses) const
 {
-    if (budget < stopAtBudget || consecutiveLosses == 0)
+    if (bet > budget)  // NOTE: subtracting would overflow
+    {
+        return 0; //stop
+    }
+    else if (budget < stopAtBudget || consecutiveLosses == 0)
     {
         return bet;
     }

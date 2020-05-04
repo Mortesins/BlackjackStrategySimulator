@@ -1,92 +1,93 @@
 #include "Table.hpp"
 #include "CountingSystems/HiOpt1.hpp"
+#include "Exceptions.hpp"
+#include "Rules.hpp"
+#include "CountingSystem.hpp"
+#include "PlayerSeat.hpp"
+#include "Constants.hpp"
+#include <sstream>
+
+unsigned getHandValue(PlayerSeat* const playerSeat, unsigned handIndex)
+{   // hand index choses on which hand to calculate the value (there can be more hands if split)
+    unsigned handValue = 0;
+    if (playerSeat->cards[handIndex].empty())
+    {
+        return handValue; // zero
+    }
+    bool acePresent = false;
+    for (unsigned short card : playerSeat->cards[handIndex])
+    {
+        if (card == 1)
+        {
+            acePresent = true;
+        }
+        handValue += card;
+    }
+    if (acePresent && handValue <= 11)
+    {
+        handValue += 10;
+    }
+    return handValue;
+}
 
 Table::Table()
-    : dealer(false),shoe(6,0.3),americanDealer(false)
+    : Table(false)
+{}
+
+Table::Table(bool print)
+    : Table(print, 6)
+{}
+
+Table::Table(bool print, unsigned numberOfDecks)
+    : print(print), americanDealer(false), countingSystem(new HiOpt1()), dealer(false),
+        shoe(numberOfDecks, 0.6)
 {
    players.push_back(new PlayerSeat());
    rules = new Rules();
-   countingSystem = new HiOpt1();
    runningCount = 0;
-   print = false;
+   shoe.getCard(); // burn first card
 }
 
-Table::Table(bool p)
-    : dealer(false),shoe(6,0.3),americanDealer(false)
+Table::Table(bool print, unsigned numberOfDecks, const std::vector<unsigned short>& cardsToRemove)
+    : print(print), americanDealer(false), countingSystem(new HiOpt1()), dealer(false),
+        shoe(numberOfDecks, cardsToRemove)
 {
    players.push_back(new PlayerSeat());
    rules = new Rules();
-   countingSystem = new HiOpt1();
    runningCount = 0;
-   print = p;
+   shoe.getCard(); // burn first card
 }
 
-Table::Table(bool p, unsigned numberOfDecks)
-    : dealer(false),shoe(numberOfDecks,0.3),americanDealer(false)
+bool Table::placeBets()
 {
-   players.push_back(new PlayerSeat());
-   rules = new Rules();
-   countingSystem = new HiOpt1();
-   runningCount = 0;
-   print = p;
-}
-
-Table::Table(bool p, unsigned numberOfDecks, const std::vector<unsigned short>& cardsToRemove)
-    : dealer(false),shoe(numberOfDecks,cardsToRemove),americanDealer(false)
-{
-   players.push_back(new PlayerSeat());
-   rules = new Rules();
-   countingSystem = new HiOpt1();
-   runningCount = 0;
-   print = p;
-}
-
-bool Table::playersInPlay()
-{
-    bool inPlay = false;
-    unsigned i = 0;
-    while ( !inPlay && (i < players.size()) )
-    {
-        inPlay = players[i]->player->inPlay();
-        ++i;
-    }
-    return inPlay;
-}
-
-void Table::placeBets()
-{
+    bool atLeastOnePlayerBet = false;
     double trueCount = this->trueCount();
     unsigned bet;
     for (unsigned i = 0; i < players.size(); i++)
     {
-        bet = players[i]->player->getBet(trueCount,players[i]->streak);
-        if (isMultipleOfBetSize(bet))
+        bet = players[i]->player->getBet(trueCount, players[i]->streak);
+        if ((bet % MINIMUM_BET) == 0)
         {
-            players[i]->player->payMoney(bet);
-            players[i]->pot.push_back(bet);
-        }
-        else
-        {
-            std::cout << "Table::placeBet: bet not multiple of betSize";
-            //throw "Table::placeBet: bet not multiple of betSize";
-        }
+            atLeastOnePlayerBet = true;
+            players[i]->pot.push_back(players[i]->player->payMoney(bet));
+        } // otherwise don't place bet
     }
+    return atLeastOnePlayerBet;
 }
 
 void Table::distributeCards()
 {
-    // cards is std::vector< std::vector<unsigned short> >, at the end of the round is emptied
+    // cards is std::vector<std::vector<unsigned short>>, at the end of the round is emptied
         // so I need to add an empty "std::vector<unsigned short>" to which i will give the cards
     /*** add empty std::vector and give first card ***/
     std::vector<unsigned short> tmp;
-    for (unsigned i = 0; i < players.size(); i++)
+    for (unsigned i = 0; i < players.size(); ++i)
     {
         players[i]->cards.push_back(tmp);
         players[i]->cards[0].push_back(getCard());
     }
     /********************************************/
 
-    // give card to dealer
     dealer.newCard(getCard());
 
     /*** give second card ***/
@@ -99,7 +100,7 @@ void Table::distributeCards()
     // give second hole card to american dealer without counting it
     if (americanDealer)
     {
-        dealer.newCard(getCard(false));
+        dealer.newCard(getCardWithoutCounting());
     }
 }
 
@@ -110,17 +111,17 @@ void Table::insurance()
     for (unsigned i = 0; i < players.size(); i++)
     {
         bet = players[i]->pot[0];
-        players[i]->insurance = players[i]->player->getInsurance(tc,bet); //if no insurance it will be 0
+        players[i]->insurance = players[i]->player->getInsurance(tc, bet); //if no insurance it will be 0
     }
 }
 
 void Table::playersPlay()
 {
-    for (unsigned i = 0; i < players.size(); i++)
+    for (unsigned playerIndex = 0; playerIndex < players.size(); ++playerIndex)
     {
-        for (unsigned handIndex = 0; handIndex < players[i]->cards.size(); handIndex++)
+        for (unsigned handIndex = 0; handIndex < players[playerIndex]->cards.size(); ++handIndex)
         {   // for each hand, NOTE: cards.size() should be changed by playerPlay when split
-            playerPlay(i,handIndex);
+            playerPlay(playerIndex, handIndex);
         }
     }
 }
@@ -129,60 +130,50 @@ void Table::playerPlay(unsigned playerIndex, unsigned handIndex)
 {   // plays handIndex, if split continues to play the first hand of the split, which has same handIndex
     unsigned short dealerUpCard = dealer.upCard();
     std::vector<Action> actionsNotAllowed;
-    bool playerBust;
     double tc;
 
-    //std::cout << "\t\t\t\tPlayerPlay " << handIndex << std::endl;
-
     Action play;
-    while (play != Action::STAND) // until player stands
+    do // until player stands
     {
         tc = trueCount();
-        // get actions not allowed
         actionsNotAllowed = rules->getActionsNotAllowed(players[playerIndex]->cards, handIndex);
-        // call getPlay (should give actionsAllowed here based on Rules)
-        play = players[playerIndex]->player->getPlay(tc,dealerUpCard,handIndex,actionsNotAllowed);
+        play = players[playerIndex]->player->getPlay(tc, dealerUpCard, handIndex, actionsNotAllowed);
         if (print)
         {
             std::cout << "Play: " << play << std::endl;
         }
-        switch(play)
+        switch (play)
         {
-            /*** needs implementation
-            case 'R':
-                // needs implementation
-                break;
-            ***/
             case Action::SPLIT:
-                split(playerIndex,handIndex);
+                split(playerIndex, handIndex);
+                if (print)
+                {
+                    printPlayerSeats();
+                }
                 break; // continues play on the same handIndex
             case Action::DOUBLEDOWN:
-                doubleDown(playerIndex,handIndex);
+                doubleDown(playerIndex, handIndex);
                 if (print)
+                {
                     printPlayerSeats();
+                }
                 return; // player bust checked inside double down, and even if not bust the play ends here
             case Action::HIT:
                 players[playerIndex]->cards[handIndex].push_back(getCard());
-                playerBust = checkPlayerBust(playerIndex,handIndex);
-                if (playerBust)
+                if (print)
                 {
-                    if (print)
-                    {
-                        std::cout << "\\********* Player Bust ************/" << std::endl;
-                        printPlayerSeats();
-                    }
+                    printPlayerSeats();
+                }
+                if (isPlayerBust(players[playerIndex], handIndex))
+                {
                     return;
                 }
                 break;
             default:
                 break;
         }
-
-        if (print)
-        {
-            printPlayerSeats();
-        }
     }
+    while (play != Action::STAND);
 }
 
 void Table::split(unsigned playerIndex, unsigned handIndex)
@@ -191,7 +182,7 @@ void Table::split(unsigned playerIndex, unsigned handIndex)
     unsigned money = players[playerIndex]->player->payMoney(players[playerIndex]->pot[handIndex]);
     // put money in the newPot
     std::vector<unsigned>::iterator it_pot = players[playerIndex]->pot.begin();
-    players[playerIndex]->pot.insert(it_pot+handIndex+1,money);
+    players[playerIndex]->pot.insert(it_pot+handIndex+1, money);
     // create new hand with the second card of first hand
     std::vector<unsigned short> newHand;
     // put second card of first hand in the newHand
@@ -200,7 +191,7 @@ void Table::split(unsigned playerIndex, unsigned handIndex)
     players[playerIndex]->cards[handIndex].pop_back();
     // add newHand to hands
     std::vector<std::vector<unsigned short> >::iterator it_cards = players[playerIndex]->cards.begin();
-    players[playerIndex]->cards.insert(it_cards+handIndex+1,newHand);
+    players[playerIndex]->cards.insert(it_cards+handIndex+1, newHand);
 
     // give a card to the two new hands
     players[playerIndex]->cards[handIndex].push_back(getCard());
@@ -212,26 +203,20 @@ void Table::doubleDown(unsigned playerIndex, unsigned handIndex)
     // double the money, so player has to put what is in the pot
     unsigned money = players[playerIndex]->player->payMoney(players[playerIndex]->pot[handIndex]);
     players[playerIndex]->pot[handIndex] += money;
-    // give card
     players[playerIndex]->cards[handIndex].push_back(getCard());
-    // check if player bust
-    checkPlayerBust(playerIndex);
+    isPlayerBust(players[playerIndex]);
 }
 
-bool Table::checkPlayerBust(unsigned playerIndex, unsigned handIndex)
-{   // hand index choses on which hand to calculate the value (there can be more hands if split)
-    if (handValue(playerIndex,handIndex) > 21)
+bool Table::isPlayerBust(PlayerSeat* const playerSeat, unsigned handIndex)
+{   // hand index chooses on which hand to calculate the value (there can be more hands if split)
+    if (getHandValue(playerSeat, handIndex) > 21)
     {   //bust
         if (print)
         {
-            std::cout << "/********* Player Bust ************/" << std::endl;
-            printPlayerSeats();
+            std::cout << "/********* Player Bust ********/" << std::endl;
         }
-        /*** empty cards ***/
-        players[playerIndex]->cards[handIndex].clear();
-        /*******************/
-        // remove money from pot
-        players[playerIndex]->pot[handIndex] = 0;
+        playerSeat->cards[handIndex].clear();
+        playerSeat->pot[handIndex] = 0;
         return true;
     }
     return false;
@@ -251,73 +236,65 @@ void Table::dealerPlay()
 
 void Table::giveCollectMoney()
 {
-    //std::cout << "GiveCollectMoney" << std::endl;
     unsigned sum;
     unsigned dealerHand = dealer.getHand();
     // if dealer bust
     if (dealerHand > 21)
     {    // pay everyone
-        for (unsigned playerIndex = 0; playerIndex < players.size(); playerIndex++)
+        for (PlayerSeat* playerSeat : players)
         {
             sum = 0;
             // sum all pots
-            for (unsigned handIndex = 0; handIndex < players[playerIndex]->pot.size(); handIndex++)
+            for (unsigned handIndex = 0; handIndex < playerSeat->pot.size(); ++handIndex)
             {
-                if (blackjack(playerIndex,handIndex))
+                if (blackjack(playerSeat, handIndex))
                 {
-                    players[playerIndex]->player->receiveMoney( (unsigned)(players[playerIndex]->pot[handIndex]*2.5) );
+                    playerSeat->player->receiveMoney((unsigned)playerSeat->pot[handIndex]*2.5);
                 }
                 else
                 {
-                    sum += players[playerIndex]->pot[handIndex]; //if player bust pot = 0
+                    sum += playerSeat->pot[handIndex]; //if player bust pot = 0
                 }
-                players[playerIndex]->pot[handIndex] = 0; // reset all pot
+                playerSeat->pot[handIndex] = 0; // reset pot
             }
             // give the sum*2 to the player
-            players[playerIndex]->player->receiveMoney(sum*2);
-            // player won
-            players[playerIndex]->updateStreakWin();
+            playerSeat->player->receiveMoney(sum*2);
+            playerSeat->updateStreakWin();
         }
     }
     else
-    { // else
-        for (unsigned playerIndex = 0; playerIndex < players.size(); playerIndex++)
-        {   // for each player
-            for (unsigned handIndex = 0; handIndex < players[playerIndex]->cards.size(); handIndex++)
-            {   // for each hand
-                // if blackjack
-                if (blackjack(playerIndex,handIndex))
+    {
+        unsigned handValue;
+        for (PlayerSeat* playerSeat : players)
+        {
+            for (unsigned handIndex = 0; handIndex < playerSeat->cards.size(); ++handIndex)
+            {
+                if (blackjack(playerSeat, handIndex))
                 {
                     // pay player 3:2, NOTE: BJ vs BJ already taken care
-                    players[playerIndex]->player->receiveMoney( (unsigned)(players[playerIndex]->pot[handIndex]*2.5) );
-                    // remove pot money
-                    players[playerIndex]->pot[handIndex] = 0;
-                    // player won
-                    players[playerIndex]->updateStreakWin();
+                    playerSeat->player->receiveMoney( (unsigned)(playerSeat->pot[handIndex]*2.5) );
+                    playerSeat->pot[handIndex] = 0;
+                    playerSeat->updateStreakWin();
                 }
                 else
-                {    // else
-                    // if handValue > dealerHand
-                    if (handValue(playerIndex,handIndex) > dealerHand)
+                {
+                    handValue = getHandValue(playerSeat, handIndex);
+                    if (handValue > dealerHand)
                     {
-                        // pay player
-                        players[playerIndex]->player->receiveMoney(players[playerIndex]->pot[handIndex]*2);
-                        // player won
-                        players[playerIndex]->updateStreakWin();
+                        playerSeat->player->receiveMoney(playerSeat->pot[handIndex]*2);
+                        playerSeat->updateStreakWin();
                     }
-                    else if (handValue(playerIndex,handIndex) == dealerHand)
-                    {   // else if handValue == dealerHand
-                        // give back money
-                        players[playerIndex]->player->receiveMoney(players[playerIndex]->pot[handIndex]);
-                        // streak remain the same
+                    else if (handValue == dealerHand)
+                    {
+                        playerSeat->player->receiveMoney(playerSeat->pot[handIndex]);
+                        // streak remains the same
                     }
                     else
-                    {   // handValue < dealerHand
+                    {
                         // player lost NOTE: having two hands and losing with both counts as 2 losses
-                        players[playerIndex]->updateStreakLose();
+                        playerSeat->updateStreakLose();
                     }
-                    // remove money from pot, either because lost but even reset after win
-                    players[playerIndex]->pot[handIndex] = 0;
+                    playerSeat->pot[handIndex] = 0; // reset pot
                 }
             }
         }
@@ -327,149 +304,142 @@ void Table::giveCollectMoney()
 void Table::trashCardsAndEmptyPots()
 {
     dealer.reset();
-    for (unsigned i = 0; i < players.size(); i++)
+    for (PlayerSeat* playerSeat : players)
     {
-        players[i]->cards.clear();
-        players[i]->pot.clear();
+        playerSeat->cards.clear();
+        playerSeat->pot.clear();
     }
 }
 
-double Table::trueCount()
+inline double Table::trueCount()
 {
     return runningCount / shoe.decksRemaining();
 }
 
-bool Table::isMultipleOfBetSize(unsigned bet)
+inline unsigned short Table::getCard()
 {
-    return ( (bet % 2) == 0 );
-}
-
-unsigned short Table::getCard(bool countCard)
-{ // no counting when giving second hole card to american dealer
-    unsigned short card = shoe.getCard();
-    if (countCard)
-    {
-        runningCount += countingSystem->cardValue(card);
-    }
+    unsigned short card = getCardWithoutCounting();
+    runningCount += countingSystem->cardValue(card);
     return card;
 }
 
-unsigned Table::handValue(unsigned playerIndex, unsigned handIndex)
-{   // hand index choses on which hand to calculate the value (there can be more hands if split)
-    unsigned handValue = 0;
-    if (players[playerIndex]->cards[handIndex].empty())
-    {
-        return handValue; // zero
-    }
-    for (unsigned i = 0; i < players[playerIndex]->cards[handIndex].size(); i++)
-    {
-        handValue += players[playerIndex]->cards[handIndex][i];
-    }
-    return handValue;
-}
-
-bool Table::blackjack(unsigned playerIndex, unsigned handIndex)
-{   // only possibility is [1,10] or [10,1]
-    if (players[playerIndex]->cards[handIndex].empty()) // if player bust
-        return false;
-    return (
-      (  (players[playerIndex]->cards[handIndex][0] == 1) && (players[playerIndex]->cards[handIndex][1] == 10)  ) ||
-      (  (players[playerIndex]->cards[handIndex][0] == 10) && (players[playerIndex]->cards[handIndex][1] == 1)  )
-   );
+inline unsigned short Table::getCardWithoutCounting()
+{
+    return shoe.getCard();
 }
 
 bool Table::checkDealerBlackjack()
 {
-    //std::cout << "checkDealer Blackjack" << std::endl;
     if (dealer.blackjack())
     {
-        for (unsigned i = 0; i < players.size(); i++)
+        for (PlayerSeat* playerSeat : players)
         {
             // check if player has hand with blackjack
-            for (unsigned j = 0; j < players[i]->cards.size(); j++)
+            for (unsigned handIndex = 0; handIndex < playerSeat->cards.size(); ++handIndex)
             {
-                if (blackjack(i,j))
-                {   // draw, give back pot money. NOTE: Rules check if BJvsBJ is a draw
-                    if (rules->blackjackBlackjackPush())
-                    {
-                        players[i]->player->receiveMoney(players[i]->pot[j]);
-                    }
-                    // remove pot money
-                    players[i]->pot[j] = 0;
+                if (blackjack(playerSeat, handIndex) && rules->blackjackBlackjackPush())
+                {   // draw, give back pot money if rules say BJvsBJ is a draw
+                    playerSeat->player->receiveMoney(playerSeat->pot[handIndex]);
                     // draw so streak remains the same
                 }
                 else
-                {   // no blackjack so player lost. NOTE: having two hands and losing with both counts as 2 losses
-                    players[i]->updateStreakLose();
+                {   // Player lost. NOTE: having two hands and losing with both counts as 2 losses
+                    playerSeat->updateStreakLose();
                 }
             }
-            // remove all remaining (no blackjack) bets of all pots (there are more pots if split)
-            while (players[i]->pot.size() > 0)
-            {
-                players[i]->pot.pop_back();
-            }
+            // remove all cards and pots of player
+            playerSeat->cards.clear();
+            playerSeat->pot.clear();
             // payout insurance, note if player no insurance then 0*3 = 0
-            players[i]->player->receiveMoney(players[i]->insurance*3);
-            // remove insurance
-            players[i]->insurance = 0;
+            playerSeat->player->receiveMoney(playerSeat->insurance*3);
+            playerSeat->insurance = 0;
         }
         return true;
     }
     else
     {
-        //remove insurance
-        for (unsigned i = 0; i < players.size(); i++)
+        for (PlayerSeat* playerSeat : players)
         {
-            players[i]->insurance = 0;
+            playerSeat->insurance = 0;
         }
         return false;
     }
 }
 
-void Table::playRound()
+bool Table::blackjack(PlayerSeat* const playerSeat, unsigned handIndex)
+{   // only possibility is [1,10] or [10,1]
+    if (playerSeat->cards[handIndex].empty()) // if player bust
+        return false;
+    return (
+      (  (playerSeat->cards[handIndex][0] == 1) && (playerSeat->cards[handIndex][1] == 10)  ) ||
+      (  (playerSeat->cards[handIndex][0] == 10) && (playerSeat->cards[handIndex][1] == 1)  )
+   );
+}
+
+bool Table::playRound()
 {
-    placeBets();
-    distributeCards();
-    insurance();
-    if (americanDealer)
+    if (print)
     {
-        checkDealerBlackjack();
+        std::cout << "/******** NEW ROUND *********/" << std::endl;
+    }
+    if (shoe.isFinished())
+    {
+        shoe.shuffle();
+        shoe.getCard(); // Remove top card
+        if (print)
+        {
+            std::cout << "Reshuffled deck" << std::endl;
+        }
+    }
+    bool atLeastOneBetPlaced = placeBets();
+    if (!atLeastOneBetPlaced)
+    {
+        return false;
+    }
+    distributeCards();
+    bool dealerBlackjack = false;
+    if (dealer.upCard() == 1)  // ACE
+    {
+        insurance();
+        if (americanDealer)
+        {
+            dealerBlackjack = checkDealerBlackjack();
+        }
     }
     if (print)
     {
-        printDealerUpCardAndCardsRemaining();
+        std::cout << "/******** NEW ROUND *********/" << std::endl;
+        printDealerUpCardAndCardsRemainingAndTrueCount();
         printPlayerSeats();
         std::cout << "/****************************/" << std::endl;
     }
-    playersPlay();
-    if (print)
+    if (dealerBlackjack)
     {
-        printDealerUpCardAndCardsRemaining();
-        std::cout << "/****************************/" << std::endl;
+        std::cout << "Dealer blackjack" << std::endl;
+        printPlayerSeats();
+        return true;
     }
+    playersPlay();
     dealerPlay();
     if (print)
     {
-        printDealerAndCardsRemaining();
-        printPlayerSeats();
         std::cout << "/****************************/" << std::endl;
+        printDealerAndCardsRemaining();
     }
     if (!americanDealer)
     {
-        if (!checkDealerBlackjack()) // if true blackjack did not happen
-        {
-            giveCollectMoney();
-        }
+        dealerBlackjack = checkDealerBlackjack();
     }
-    else
+    if (!dealerBlackjack || americanDealer)  // because if americanDealer and blackjack it would have already terminated
     {
         giveCollectMoney();
     }
+    trashCardsAndEmptyPots();
     if (print)
     {
-        std::cout << "Player Money: " << players[0]->player->getMoney() << std::endl;
+        printPlayerSeats();
     }
-    trashCardsAndEmptyPots();
+    return true;
 }
 
 /********************* SINGLE HAND TEST ************************************/
@@ -554,7 +524,7 @@ void Table::distributeCardsSpecificHand(unsigned short dealerUpCard, unsigned sh
     // give second hole card to american dealer without counting it
     if (americanDealer)
     {
-        dealer.newCard(getCard(false));
+        dealer.newCard(getCardWithoutCounting());
     }
 }
 
@@ -633,7 +603,7 @@ void Table::distributeCardsSplit()
     // give second hole card to american dealer without counting it
     if (americanDealer)
     {
-        dealer.newCard(getCard(false));
+        dealer.newCard(getCardWithoutCounting());
     }
 }
 
@@ -663,8 +633,14 @@ void Table::distributeCardsDoubleDown()
     // give second hole card to american dealer without counting it
     if (americanDealer)
     {
-        dealer.newCard(getCard(false));
+        dealer.newCard(getCardWithoutCounting());
     }
+}
+
+void Table::printDealerUpCardAndCardsRemainingAndTrueCount()
+{
+    printDealerUpCardAndCardsRemaining();
+    std::cout << "True Count: "  << trueCount() << std::endl;
 }
 
 void Table::printDealerUpCardAndCardsRemaining()

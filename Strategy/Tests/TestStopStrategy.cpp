@@ -53,6 +53,13 @@ TEST(StopStrategy, WhenLessThanOneBetAboveStopAtBudgetAndOneConsecutiveLossThenG
     EXPECT_EQ(2, s.getBet(26, 4, 1));
 }
 
+TEST(StopStrategy, WhenNotEnoughMoneyThenStop)
+{
+    StopStrategy s(24, 2);
+    EXPECT_EQ(0, s.getBet(1, 2, 1));
+    EXPECT_EQ(0, s.getBet(3, 4, 1));
+}
+
 TEST(StopStrategy, WhenMoreThanOneBetAboveStopAtBudgetAndOneConsecutiveLossThenPlay)
 {
     StopStrategy s(24, 2);
