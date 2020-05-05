@@ -66,7 +66,7 @@ bool Table::placeBets()
     for (unsigned i = 0; i < players.size(); i++)
     {
         bet = players[i]->player->getBet(trueCount, players[i]->streak);
-        if ((bet % MINIMUM_BET) == 0)
+        if (bet != 0 && (bet % MINIMUM_BET) == 0)
         {
             atLeastOnePlayerBet = true;
             players[i]->pot.push_back(players[i]->player->payMoney(bet));
@@ -408,7 +408,6 @@ bool Table::playRound()
     }
     if (print)
     {
-        std::cout << "/******** NEW ROUND *********/" << std::endl;
         printDealerUpCardAndCardsRemainingAndTrueCount();
         printPlayerSeats();
         std::cout << "/****************************/" << std::endl;

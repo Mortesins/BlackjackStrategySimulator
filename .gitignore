@@ -1,3 +1,5 @@
 Tests/test*
 Strategy/Tests/test*
 *.o
+bjsim
+*.log

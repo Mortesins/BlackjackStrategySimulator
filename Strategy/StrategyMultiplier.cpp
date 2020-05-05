@@ -1,4 +1,5 @@
 #include "StrategyMultiplier.hpp"
+#include "../Constants.hpp"
 #include <cmath>
 
 StrategyMultiplier::StrategyMultiplier()
@@ -23,5 +24,5 @@ unsigned StrategyMultiplier::getBet(double trueCount, unsigned budget, int strea
             found = true;
         }
     }
-    return this->stopStrategy.getBet(budget, floor(multipliers[i]*2), consecutiveLosses(streak));
+    return this->stopStrategy.getBet(budget, floor(multipliers[i]*MINIMUM_BET), consecutiveLosses(streak));
 }
