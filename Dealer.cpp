@@ -54,6 +54,11 @@ bool Dealer::blackjack()
     return ( (hand == 21) && (isSoftHand) );
 }
 
+bool Dealer::canMakeBlackjack()
+{
+    return (cards[0] == 10 || cards[0] == 1);
+}
+
 void Dealer::reset()
 {
     hand = 0;
@@ -78,11 +83,12 @@ std::ostream& operator<<(std::ostream& os, const Dealer& d)
     }
     if (d.cards[i] == 1)
     {
-        os << "A" << std::endl;
+        os << "A";
     }
     else
     {
-        os << d.cards[i] << "\tHand Total:\t " << d.hand << std::endl;
+        os << d.cards[i];
     }
+    os << "\tHand Total:\t " << d.hand << std::endl;
     return os;
 }

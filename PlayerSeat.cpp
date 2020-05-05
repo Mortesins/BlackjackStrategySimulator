@@ -14,6 +14,11 @@ PlayerSeat::PlayerSeat(Player* p)
     insurance = 0;
 }
 
+PlayerSeat::~PlayerSeat()
+{
+    delete player;
+}
+
 void PlayerSeat::updateStreakWin()
 {
     if (streak >= 0)

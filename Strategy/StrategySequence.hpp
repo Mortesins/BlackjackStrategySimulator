@@ -16,6 +16,7 @@ class StrategySequence
     std::vector<unsigned> levelCounters;
   public:
     StrategySequence();
+    virtual ~StrategySequence() {};
     unsigned getBet(double trueCount, unsigned budget, int streak);
 };
 

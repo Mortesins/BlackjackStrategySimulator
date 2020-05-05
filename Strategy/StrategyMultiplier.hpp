@@ -19,6 +19,7 @@ class StrategyMultiplier
     std::vector<double> multipliers;
   public:
     StrategyMultiplier();
+    virtual ~StrategyMultiplier() {};
     virtual unsigned getBet(double trueCount, unsigned budget, int streak);
 };
 

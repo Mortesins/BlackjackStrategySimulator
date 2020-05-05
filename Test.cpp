@@ -10,30 +10,33 @@ double testHand(
     bool print=false
 )
 {   // returns profit, percent from starting budget
-    unsigned long money = 0;
+    unsigned long long money = 0;
     std::vector<unsigned short> cardsToRemove = {dealerUpCard, playerCard1, playerCard2};
-
-    Table t(print, 6, cardsToRemove); // 6 decks
 
     for (unsigned i = 0; i < numberOfSimulations; i++)
     {
+        Table t(print, 6); // 6 decks
         std::cout << "\t\t\tNumber: " << i << std::endl;
-        money += t.playHandTest(dealerUpCard, playerCard1, playerCard2);
+        money += t.playRoundWithSpecificHandAndReturnPlayerBudget(dealerUpCard, playerCard1, playerCard2);
     }
     double averageMoney = money / (float)numberOfSimulations;
-    double gain = (averageMoney - 1000) / 1000.0;
+    double gain = (averageMoney - 20) / 20.0;
     std::cout << std::endl;
     std::cout << std::endl;
-    std::cout << "Average money: " << averageMoney << " starting from 1000" << std::endl;
+    std::cout << "Average money: " << averageMoney << " starting from 20" << std::endl;
     std::cout << "Gain: " << gain << std::endl;
     return gain;
 }
 
-int main()
+void playMatch()
 {
-    //testHand(1000000, 1, 1, 1);
     Table t(true, 6);
     while (t.playRound())
     {}
+}
+
+int main()
+{
+    testHand(10000, 1, 1, 1, true);
     return 0;
 }

@@ -23,6 +23,7 @@ class Dealer
     bool hit();
     void newCard(unsigned short c);
     bool blackjack();
+    bool canMakeBlackjack();
     void reset();
 };
 

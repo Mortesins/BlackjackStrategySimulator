@@ -11,6 +11,11 @@ Player::Player(string n, PlayerSeat* ps)
     money = 20*MINIMUM_BET;
 }
 
+Player::~Player()
+{
+    delete strategy;
+}
+
 unsigned Player::getBet(double trueCount, int streak)
 {
     return strategy->getBet(trueCount, money, streak);

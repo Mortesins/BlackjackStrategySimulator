@@ -7,6 +7,7 @@ class HiOpt1
   : public CountingSystem
 {
   public:
+    virtual ~HiOpt1() {};
     virtual int cardValue(unsigned short card) const;
 };
 

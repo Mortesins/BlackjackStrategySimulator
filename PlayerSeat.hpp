@@ -16,6 +16,7 @@ class PlayerSeat
 
     PlayerSeat();
     PlayerSeat(Player* p);
+    virtual ~PlayerSeat();
     void updateStreakWin();
     void updateStreakLose();
 };

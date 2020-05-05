@@ -39,8 +39,10 @@ class Table
     bool isPlayerBust(PlayerSeat* const playerSeat, unsigned handIndex = 0);
     void dealerPlay();
     bool checkDealerBlackjack();
+    bool allPlayersHaveBlackjacks();
     void giveCollectMoney();
     void trashCardsAndEmptyPots();
+    bool playRoundAfterDistributedCards();
 
     double trueCount();
     bool isMultipleOfBetSize(unsigned bet);
@@ -52,13 +54,22 @@ class Table
     Table();
     Table(bool print);
     Table(bool print, unsigned numberOfDecks);
-    Table(bool print, unsigned numberOfDecks, const std::vector<unsigned short> & cardsToRemove);
+    virtual ~Table();
 
     /**
      * Plays round.
      * Returns true if round played and false if no player placed a bet
      */
     bool playRound();
+    /**
+     * Plays one round from scratch with specified hand
+     */
+    void playRoundWithSpecificHand(unsigned short dealerUpCard, unsigned short playerCard1, unsigned short playerCard2);
+    unsigned playRoundWithSpecificHandAndReturnPlayerBudget(
+        unsigned short dealerUpCard,
+        unsigned short playerCard1,
+        unsigned short playerCard2
+    );
 /****** TEST CERTAIN HAND *******/
     unsigned playHandTest(unsigned short dealerUpCard, unsigned short playerCard1, unsigned short playerCard2);
     void distributeCardsSpecificHand(unsigned short dealerUpCard, unsigned short playerCard1, unsigned short playerCard2);

@@ -48,14 +48,14 @@ Table::Table(bool print, unsigned numberOfDecks)
    shoe.getCard(); // burn first card
 }
 
-Table::Table(bool print, unsigned numberOfDecks, const std::vector<unsigned short>& cardsToRemove)
-    : print(print), americanDealer(false), countingSystem(new HiOpt1()), dealer(false),
-        shoe(numberOfDecks, cardsToRemove)
+Table::~Table()
 {
-   players.push_back(new PlayerSeat());
-   rules = new Rules();
-   runningCount = 0;
-   shoe.getCard(); // burn first card
+    for (PlayerSeat* player : players)
+    {
+        delete player;
+    }
+    delete rules;
+    delete countingSystem;
 }
 
 bool Table::placeBets()
@@ -77,23 +77,33 @@ bool Table::placeBets()
 
 void Table::distributeCards()
 {
-    // cards is std::vector<std::vector<unsigned short>>, at the end of the round is emptied
+    distributeCardsSpecificHand(getCard(), getCard(), getCard());
+}
+
+inline void Table::distributeCardsSpecificHand(
+    unsigned short dealerUpCard,
+    unsigned short playerCard1,
+    unsigned short playerCard2
+)
+{
+    // cards is std::vector< std::vector<unsigned short> >, at the end of the round is emptied
         // so I need to add an empty "std::vector<unsigned short>" to which i will give the cards
     /*** add empty std::vector and give first card ***/
     std::vector<unsigned short> tmp;
-    for (unsigned i = 0; i < players.size(); ++i)
+    for (unsigned i = 0; i < players.size(); i++)
     {
         players[i]->cards.push_back(tmp);
-        players[i]->cards[0].push_back(getCard());
+        players[i]->cards[0].push_back(playerCard1);
     }
     /********************************************/
 
-    dealer.newCard(getCard());
+    // give card to dealer
+    dealer.newCard(dealerUpCard);
 
     /*** give second card ***/
     for (unsigned i = 0; i < players.size(); i++)
     {
-        players[i]->cards[0].push_back(getCard());
+        players[i]->cards[0].push_back(playerCard2);
     }
     /************************/
 
@@ -376,6 +386,21 @@ bool Table::blackjack(PlayerSeat* const playerSeat, unsigned handIndex)
    );
 }
 
+bool Table::allPlayersHaveBlackjacks()
+{
+    for (PlayerSeat* const player : players)
+    {
+        for (unsigned handIndex = 0; handIndex < player->cards.size(); ++handIndex)
+        {
+            if (!blackjack(player, handIndex))
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 bool Table::playRound()
 {
     if (print)
@@ -394,9 +419,18 @@ bool Table::playRound()
     bool atLeastOneBetPlaced = placeBets();
     if (!atLeastOneBetPlaced)
     {
+        if (print)
+        {
+            std::cout << "No bets placed. True Count: "  << trueCount() << std::endl;
+        }
         return false;
     }
     distributeCards();
+    return playRoundAfterDistributedCards();
+}
+
+bool Table::playRoundAfterDistributedCards()
+{
     bool dealerBlackjack = false;
     if (dealer.upCard() == 1)  // ACE
     {
@@ -419,7 +453,11 @@ bool Table::playRound()
         return true;
     }
     playersPlay();
-    dealerPlay();
+    bool allPlayersHaveBlackjack = allPlayersHaveBlackjacks();
+    if (!allPlayersHaveBlackjack || (allPlayersHaveBlackjack && dealer.canMakeBlackjack()))
+    {
+        dealerPlay();
+    }
     if (print)
     {
         std::cout << "/****************************/" << std::endl;
@@ -439,6 +477,32 @@ bool Table::playRound()
         printPlayerSeats();
     }
     return true;
+}
+
+void Table::playRoundWithSpecificHand(
+    unsigned short dealerUpCard,
+    unsigned short playerCard1,
+    unsigned short playerCard2
+)
+{
+    if (print)
+    {
+        std::cout << "/******** NEW ROUND *********/" << std::endl;
+    }
+    shoe.shuffleAndRemoveCards({dealerUpCard, playerCard1, playerCard2});
+    placeBets();
+    distributeCardsSpecificHand(dealerUpCard, playerCard1, playerCard2);
+    playRoundAfterDistributedCards();
+}
+
+unsigned Table::playRoundWithSpecificHandAndReturnPlayerBudget(
+    unsigned short dealerUpCard,
+    unsigned short playerCard1,
+    unsigned short playerCard2
+)
+{
+    playRoundWithSpecificHand(dealerUpCard, playerCard1, playerCard2);
+    return players[0]->player->getMoney();
 }
 
 /********************* SINGLE HAND TEST ************************************/
@@ -495,36 +559,6 @@ unsigned Table::playHandTest(unsigned short dealerUpCard, unsigned short playerC
     }
     trashCardsAndEmptyPots();
     return players[0]->player->getMoney();
-}
-
-void Table::distributeCardsSpecificHand(unsigned short dealerUpCard, unsigned short playerCard1, unsigned short playerCard2)
-{
-    // cards is std::vector< std::vector<unsigned short> >, at the end of the round is emptied
-        // so I need to add an empty "std::vector<unsigned short>" to which i will give the cards
-    /*** add empty std::vector and give first card ***/
-    std::vector<unsigned short> tmp;
-    for (unsigned i = 0; i < players.size(); i++)
-    {
-        players[i]->cards.push_back(tmp);
-        players[i]->cards[0].push_back(playerCard1);
-    }
-    /********************************************/
-
-    // give card to dealer
-    dealer.newCard(dealerUpCard);
-
-    /*** give second card ***/
-    for (unsigned i = 0; i < players.size(); i++)
-    {
-        players[i]->cards[0].push_back(playerCard2);
-    }
-    /************************/
-
-    // give second hole card to american dealer without counting it
-    if (americanDealer)
-    {
-        dealer.newCard(getCardWithoutCounting());
-    }
 }
 
 /********************* TESTING ************************************/

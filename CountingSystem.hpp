@@ -4,6 +4,7 @@
 class CountingSystem
 {
   public:
+    virtual ~CountingSystem() {};
     virtual int cardValue(unsigned short card) const = 0;
 };
 

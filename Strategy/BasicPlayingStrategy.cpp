@@ -404,7 +404,6 @@ Action BasicPlayingStrategy::getPlay(
 ) const
 {
     std::vector<unsigned short> coord = getCoordinates(cards, dealerUpCard);
-
     for (Action action : actionsTable[coord[0]][coord[1]])
     {
         if (actionIsAllowed(action, actionsNotAllowed))

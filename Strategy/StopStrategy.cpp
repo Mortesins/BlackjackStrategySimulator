@@ -56,6 +56,10 @@ unsigned StopStrategy::getBet(unsigned budget, unsigned bet, unsigned consecutiv
 
 bool StopStrategy::canSplit(unsigned budget, unsigned bet) const
 {
+    if (bet > budget)  // NOTE: subtracting would overflow
+    {
+        return false;
+    }
     if (budget < stopAtBudget)
     {
         return true;

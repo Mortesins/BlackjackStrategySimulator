@@ -60,6 +60,13 @@ TEST(StopStrategy, WhenNotEnoughMoneyThenStop)
     EXPECT_EQ(0, s.getBet(3, 4, 1));
 }
 
+TEST(StopStrategy, WhenBetEqualsBudgetThenPlayAllTheMoney)
+{
+    StopStrategy s(24, 2);
+    EXPECT_EQ(2, s.getBet(2, 2, 1));
+    EXPECT_EQ(4, s.getBet(4, 4, 1));
+}
+
 TEST(StopStrategy, WhenMoreThanOneBetAboveStopAtBudgetAndOneConsecutiveLossThenPlay)
 {
     StopStrategy s(24, 2);
@@ -96,6 +103,12 @@ TEST(StopStrategy, WhenBelowStopAtBudgetThenCanDouble)
     EXPECT_TRUE(s.canDouble(23, 2));
 }
 
+TEST(StopStrategy, WhenNotEnoughMoneyThenCannotDouble)
+{
+    StopStrategy s(24, 2);
+    EXPECT_FALSE(s.canDouble(1, 2));
+}
+
 TEST(StopStrategy, WhenMoreThanOneBetAboveStopAtBudgetThenCanSplit)
 {
     StopStrategy s(24, 2);
@@ -122,6 +135,12 @@ TEST(StopStrategy, WhenBelowStopAtBudgetThenCanSplit)
 {
     StopStrategy s(24, 2);
     EXPECT_TRUE(s.canSplit(23, 2));
+}
+
+TEST(StopStrategy, WhenNotEnoughMoneyThenCannotSplit)
+{
+    StopStrategy s(24, 2);
+    EXPECT_FALSE(s.canSplit(0, 2));
 }
 
 int main(int argc, char **argv) {

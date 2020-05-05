@@ -11,6 +11,7 @@ class BasicPlayingStrategy
     : public PlayingStrategy
 {
   public:
+    virtual ~BasicPlayingStrategy() {};
     BasicPlayingStrategy();
     static inline bool actionIsAllowed(Action action, const std::vector<Action>& actionsNotAllowed);
     virtual Action getPlay(

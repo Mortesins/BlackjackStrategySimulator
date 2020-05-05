@@ -21,6 +21,7 @@ class Player
     Strategy* strategy;
   public:
     Player(string n, PlayerSeat* ps);
+    virtual ~Player();
 
     unsigned getBet(double trueCount, int streak);
     Action getPlay(

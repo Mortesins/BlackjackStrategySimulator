@@ -9,6 +9,11 @@ Strategy::Strategy()
     playingStrategy = new BasicPlayingStrategy();
 }
 
+Strategy::~Strategy()
+{
+    delete playingStrategy;
+}
+
 unsigned Strategy::consecutiveLosses(int streak) // convert streak to consecutiveLosses
 {
     if (streak >= 0)
@@ -43,7 +48,7 @@ Action Strategy::getPlay(
     {
         actionsNotAllowed.push_back(Action::DOUBLEDOWN);
     }
-    else if (!stopStrategy.canSplit(budget, bet))
+    if (!stopStrategy.canSplit(budget, bet))
     {
         actionsNotAllowed.push_back(Action::SPLIT);
     }

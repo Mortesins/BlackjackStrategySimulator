@@ -14,6 +14,7 @@ class PlayingStrategy
     std::vector<std::vector<std::vector<Action>>> actionsTable;
 
   public:
+    virtual ~PlayingStrategy() {};
     //returns row and column of table
     std::vector<unsigned short> getCoordinates(
         const std::vector<unsigned short>& cards,

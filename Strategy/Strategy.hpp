@@ -31,6 +31,7 @@ class Strategy
     unsigned consecutiveLosses(int streak);
   public:
     Strategy();
+    virtual ~Strategy();
     bool getInsurance(double trueCount);
     Action getPlay(
         double trueCount,

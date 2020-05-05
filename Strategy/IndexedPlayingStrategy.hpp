@@ -11,6 +11,7 @@ class IndexedPlayingStrategy
     bool isIndexed[28][10];
 
   public:
+    virtual ~IndexedPlayingStrategy() {};
     IndexedPlayingStrategy();
     virtual Action getPlay(
         const std::vector<unsigned short>& cards,
