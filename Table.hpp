@@ -2,24 +2,24 @@
 #define TABLE_HPP
 
 #include <vector>
+#include <iostream>
 
 #include "Shoe.hpp"
 #include "Dealer.hpp"
-// for printDealerAndCardsRemaining()
-#include <iostream>
+#include "PlayerSeat.hpp"
 
 class Rules;
 class CountingSystem;
-class PlayerSeat;
+class Player;
 
 class Table
 {
   private:
     const bool print;
     const bool americanDealer;
-    const CountingSystem* countingSystem;
+    const CountingSystem* const countingSystem;
 
-    std::vector<PlayerSeat*> players;
+    std::vector<PlayerSeat> players;
     Dealer dealer;
     Shoe shoe;
     Rules* rules;
@@ -36,7 +36,7 @@ class Table
     void playerPlay(unsigned playerIndex, unsigned handIndex = 0);
     void split(unsigned playerIndex, unsigned handIndex = 0);
     void doubleDown(unsigned playerIndex, unsigned handIndex = 0);
-    bool isPlayerBust(PlayerSeat* const playerSeat, unsigned handIndex = 0);
+    bool isPlayerBust(PlayerSeat& playerSeat, unsigned handIndex = 0);
     void dealerPlay();
     bool checkDealerBlackjack();
     bool allPlayersHaveBlackjacks();
@@ -48,12 +48,11 @@ class Table
     bool isMultipleOfBetSize(unsigned bet);
     unsigned short getCard();
     unsigned short getCardWithoutCounting();
-    bool blackjack(PlayerSeat* const playerSeat, unsigned handIndex);
+    bool blackjack(const PlayerSeat& playerSeat, unsigned handIndex);
   public:
 
-    Table();
-    Table(bool print);
-    Table(bool print, unsigned numberOfDecks);
+    Table(const vector<Player*>& players, bool print=false);
+    Table(const vector<Player*>& players, unsigned numberOfDecks, bool print);
     virtual ~Table();
 
     /**
@@ -85,5 +84,5 @@ class Table
 };
 
 
-unsigned getHandValue(PlayerSeat* const playerSeat, unsigned handIndex);
+unsigned getHandValue(const PlayerSeat& playerSeat, unsigned handIndex);
 #endif

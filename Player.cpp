@@ -2,28 +2,22 @@
 
 #include "Strategy/StrategyMultiplier.hpp"
 #include "PlayerSeat.hpp"
-#include "Constants.hpp"
 
-Player::Player(string n, PlayerSeat* ps)
-    : name(n), playerSeat(ps)
+Player::Player(string n, unsigned money, Strategy& s)
+    : name(n), strategy(s)
 {
-    strategy = new StrategyMultiplier();
-    money = 20*MINIMUM_BET;
+    this->money = money;
 }
 
-Player::~Player()
+void Player::assignPlayerSeat(PlayerSeat* ps)
 {
-    delete strategy;
+    playerSeat = ps;
+    return;
 }
 
-unsigned Player::getBet(double trueCount, int streak)
+unsigned Player::getBet(double trueCount, int streak) const
 {
-    return strategy->getBet(trueCount, money, streak);
-}
-
-Action Player::getPlay(double trueCount, unsigned short dealerUpCard, unsigned handIndex)     //dummy function, will be removed after Rules are implemented
-{
-    return strategy->getPlay(trueCount, playerSeat->cards[handIndex], dealerUpCard);
+    return strategy.getBet(trueCount, money, streak);
 }
 
 Action Player::getPlay(
@@ -31,15 +25,15 @@ Action Player::getPlay(
     unsigned short dealerUpCard,
     unsigned handIndex,
     std::vector<Action>& actionsNotAllowed
-)
+) const
 {
     unsigned bet = playerSeat->pot[handIndex];
-    return strategy->getPlay(trueCount, playerSeat->cards[handIndex], dealerUpCard, actionsNotAllowed, money, bet);
+    return strategy.getPlay(trueCount, playerSeat->cards[handIndex], dealerUpCard, actionsNotAllowed, money, bet);
 }
 
-unsigned Player::getInsurance(double trueCount, unsigned bet)
+unsigned Player::getInsurance(double trueCount, unsigned bet) const
 {
-    if (strategy->getInsurance(trueCount))
+    if (strategy.getInsurance(trueCount))
     {
         return bet*0.5; // half of the placed bet
     }
@@ -60,7 +54,12 @@ void Player::receiveMoney(unsigned m)
     money += m;
 }
 
-unsigned Player::getMoney()
+void Player::resetMoney(unsigned m)
+{
+    money = m;
+}
+
+unsigned Player::getMoney() const
 {
     return money;
 }

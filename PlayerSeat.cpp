@@ -1,22 +1,10 @@
 #include "PlayerSeat.hpp"
 
-PlayerSeat::PlayerSeat()
+PlayerSeat::PlayerSeat(Player* const p)
+    : player(p)
 {
-    player = new Player("gigi", this);
     streak = 0;
     insurance = 0;
-}
-
-PlayerSeat::PlayerSeat(Player* p)
-{
-    player = p;
-    streak = 0;
-    insurance = 0;
-}
-
-PlayerSeat::~PlayerSeat()
-{
-    delete player;
 }
 
 void PlayerSeat::updateStreakWin()

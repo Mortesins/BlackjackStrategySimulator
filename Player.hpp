@@ -16,29 +16,26 @@ class Player
     friend ostream& operator<<(ostream& os,const Player& p);
   private:
     const std::string name;
-    const PlayerSeat* playerSeat;
+    PlayerSeat* playerSeat;
     unsigned money;
-    Strategy* strategy;
+    Strategy& strategy;
   public:
-    Player(string n, PlayerSeat* ps);
-    virtual ~Player();
+    Player(string n, unsigned money, Strategy& s);
 
-    unsigned getBet(double trueCount, int streak);
-    Action getPlay(
-        double trueCount,
-        unsigned short dealerUpCard,
-        unsigned handIndex
-    );
+    void assignPlayerSeat(PlayerSeat* ps);
+
+    unsigned getBet(double trueCount, int streak) const;
     Action getPlay(
         double trueCount,
         unsigned short dealerUpCard,
         unsigned handIndex,
         std::vector<Action>& actionsNotAllowed
-    );
-    unsigned getInsurance(double trueCount, unsigned bet);
+    ) const;
+    unsigned getInsurance(double trueCount, unsigned bet) const;
     unsigned payMoney(unsigned m);
     void receiveMoney(unsigned m);
-    unsigned getMoney();
+    void resetMoney(unsigned m);
+    unsigned getMoney() const;
 };
 
 #endif

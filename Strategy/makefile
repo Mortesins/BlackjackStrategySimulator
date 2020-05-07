@@ -1,5 +1,5 @@
-Strategy_all.o: BasicPlayingStrategy.o StrategyMultiplier.o StrategySequence.o StopStrategy.o Strategy.o
-	ld -r -o Strategy_all.o Strategy.o StrategyMultiplier.o StrategySequence.o StopStrategy.o PlayingStrategy.o BasicPlayingStrategy.o
+Strategy_all.o: BasicPlayingStrategy.o StrategyMultiplier.o StrategySequence.o DummyStrategy.o StopStrategy.o Strategy.o
+	ld -r -o Strategy_all.o Strategy.o StrategyMultiplier.o StrategySequence.o DummyStrategy.o StopStrategy.o PlayingStrategy.o BasicPlayingStrategy.o
 		# because in this example I am using StrategyMultiplier and StrategySequence, otherwise there is no dependency
 		# I am using BasicPlayingStrategy
 
@@ -19,6 +19,8 @@ StrategySequence.o: StrategySequence.cpp StrategySequence.hpp Strategy.o
 	g++ -Wall -c StrategySequence.cpp
 StrategyMultiplier.o: StrategyMultiplier.cpp StrategyMultiplier.hpp Strategy.o
 	g++ -Wall -c StrategyMultiplier.cpp
+DummyStrategy.o: DummyStrategy.cpp DummyStrategy.hpp Strategy.o
+	g++ -Wall -c DummyStrategy.cpp
 
 Tests/testBasicPlayingStrategy: Tests/TestBasicPlayingStrategy.cpp BasicPlayingStrategy.o
 	g++ -Wall -o Tests/testBasicPlayingStrategy Tests/TestBasicPlayingStrategy.cpp  BasicPlayingStrategy.o PlayingStrategy.o ../Action.cpp -lgtest -lgtest_main -lpthread

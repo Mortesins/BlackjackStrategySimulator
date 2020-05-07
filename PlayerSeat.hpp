@@ -12,11 +12,9 @@ class PlayerSeat
     int streak; // Wins > 0, Losses < 0
     std::vector<unsigned> pot;
     std::vector<std::vector<unsigned short>> cards;
-    Player* player;
+    Player* const player;
 
-    PlayerSeat();
-    PlayerSeat(Player* p);
-    virtual ~PlayerSeat();
+    PlayerSeat(Player* const p);
     void updateStreakWin();
     void updateStreakLose();
 };

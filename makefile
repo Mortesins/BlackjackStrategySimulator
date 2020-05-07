@@ -4,7 +4,7 @@ all:
 bjsim: Test.cpp Table.o PlayerSeat.o Shoe.o Dealer.o Rules.o CountingSystems/HiOpt1.o Action.o Player.o Constants.o Strategy/Strategy_all.o
 	g++ -Wall -o bjsim Test.cpp Table.o PlayerSeat.o Shoe.o Dealer.o Rules.o CountingSystems/HiOpt1.o Action.o Player.o Constants.o Strategy/Strategy_all.o
 
-Table.o: Table.cpp Table.hpp
+Table.o: Table.cpp Table.hpp Shoe.hpp Dealer.hpp PlayerSeat.hpp Exceptions.hpp Rules.hpp CountingSystem.hpp Constants.hpp CountingSystems/HiOpt1.hpp
 	g++ -g -Wall -c Table.cpp
 PlayerSeat.o: PlayerSeat.cpp PlayerSeat.hpp
 	g++ -g -Wall -c PlayerSeat.cpp
