@@ -1,11 +1,13 @@
 #include "../Table.hpp"
 #include "../PlayerSeat.hpp"
 #include "../Player.hpp"
+#include "../Strategy/DummyStrategy.hpp"
 #include <gtest/gtest.h>
 
 TEST(TableTest, TestGetHandValue)
 {
-    Player p("gigi");
+    DummyStrategy d;
+    Player p("gigi", 10, d);
     PlayerSeat ps(&p);
     ps.cards = {
         {4, 1, 3},

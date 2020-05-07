@@ -1,4 +1,5 @@
 #include "Dealer.hpp"
+#include "Card.hpp"
 
 Dealer::Dealer(bool softHit)
     :softHitFlag(softHit)
@@ -71,24 +72,10 @@ std::ostream& operator<<(std::ostream& os, const Dealer& d)
     unsigned i = 0;
     while (i < d.cards.size() - 1)
     {
-        if (d.cards[i] == 1)
-        {
-            os << "A-";
-        }
-        else
-        {
-            os << d.cards[i] << "-";
-        }
+        os << card::toString(d.cards[i]) << "-";
         ++i;
     }
-    if (d.cards[i] == 1)
-    {
-        os << "A";
-    }
-    else
-    {
-        os << d.cards[i];
-    }
+    os << card::toString(d.cards[i]);
     os << "\tHand Total:\t " << d.hand << std::endl;
     return os;
 }

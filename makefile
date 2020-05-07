@@ -1,8 +1,12 @@
 all:
 	$(MAKE) bjsim
+	$(MAKE) singleHandTest
 
-bjsim: Test.cpp Table.o PlayerSeat.o Shoe.o Dealer.o Rules.o CountingSystems/HiOpt1.o Action.o Player.o Constants.o Strategy/Strategy_all.o
-	g++ -Wall -o bjsim Test.cpp Table.o PlayerSeat.o Shoe.o Dealer.o Rules.o CountingSystems/HiOpt1.o Action.o Player.o Constants.o Strategy/Strategy_all.o
+bjsim: Test.cpp Table.o PlayerSeat.o Shoe.o Dealer.o Rules.o CountingSystems/HiOpt1.o Action.o Card.o Player.o Constants.o Strategy/Strategy_all.o
+	g++ -Wall -o bjsim Test.cpp Table.o PlayerSeat.o Shoe.o Dealer.o Rules.o CountingSystems/HiOpt1.o Action.o Card.o Player.o Constants.o Strategy/Strategy_all.o
+
+singleHandTest: SingleHandTest.cpp Table.o PlayerSeat.o Shoe.o Dealer.o Rules.o CountingSystems/HiOpt1.o Action.o Card.o Player.o Constants.o Strategy/Strategy_all.o
+	g++ -Wall -o singleHandTest SingleHandTest.cpp Table.o PlayerSeat.o Shoe.o Dealer.o Rules.o CountingSystems/HiOpt1.o Action.o Card.o Player.o Constants.o Strategy/Strategy_all.o
 
 Table.o: Table.cpp Table.hpp Shoe.hpp Dealer.hpp PlayerSeat.hpp Exceptions.hpp Rules.hpp CountingSystem.hpp Constants.hpp CountingSystems/HiOpt1.hpp
 	g++ -g -Wall -c Table.cpp
@@ -20,19 +24,21 @@ Player.o: Player.cpp Player.hpp
 	g++ -g -Wall -c Player.cpp
 Action.o: Action.cpp Action.hpp
 	g++ -Wall -c Action.cpp
+Card.o: Card.cpp Card.hpp
+	g++ -Wall -c Card.cpp
 Constants.o: Constants.cpp Constants.hpp
 	g++ -g -Wall -c Constants.cpp
 Strategy/Strategy_all.o: $(shell find Strategy/ | grep ".cpp\|.hpp")
 	$(MAKE) -C Strategy/
 
-Tests/testDealer: Tests/TestDealer.cpp Dealer.o
-	g++ -Wall -o Tests/testDealer Tests/TestDealer.cpp Dealer.o -lgtest -lgtest_main -lpthread
+Tests/testDealer: Tests/TestDealer.cpp Dealer.o Card.o
+	g++ -Wall -o Tests/testDealer Tests/TestDealer.cpp Dealer.o Card.o -lgtest -lgtest_main -lpthread
 Tests/testRules: Tests/TestRules.cpp Rules.o Action.o
 	g++ -Wall -o Tests/testRules Tests/TestRules.cpp Rules.o Action.o -lgtest -lgtest_main -lpthread
 Tests/testShoe: Tests/TestShoe.cpp Shoe.o
 	g++ -Wall -o Tests/testShoe Tests/TestShoe.cpp Shoe.o -lgtest -lgtest_main -lpthread
-Tests/testTable: Tests/TestTable.cpp Table.o PlayerSeat.o Shoe.o Dealer.o Rules.o CountingSystems/HiOpt1.o Action.o Player.o Constants.o Strategy/Strategy_all.o
-	g++ -Wall -o Tests/testTable Tests/TestTable.cpp Table.o PlayerSeat.o Shoe.o Dealer.o Rules.o CountingSystems/HiOpt1.o Action.o Player.o Constants.o Strategy/Strategy_all.o -lgtest -lgtest_main -lpthread
+Tests/testTable: Tests/TestTable.cpp Table.o PlayerSeat.o Shoe.o Dealer.o Rules.o CountingSystems/HiOpt1.o Action.o Card.o  Player.o Constants.o Strategy/Strategy_all.o
+	g++ -Wall -o Tests/testTable Tests/TestTable.cpp Table.o PlayerSeat.o Shoe.o Dealer.o Rules.o CountingSystems/HiOpt1.o Action.o Card.o Player.o Constants.o Strategy/Strategy_all.o -lgtest -lgtest_main -lpthread
 
 clean:
 	$(MAKE) -C Strategy/ clean

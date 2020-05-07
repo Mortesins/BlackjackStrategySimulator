@@ -14,4 +14,10 @@ enum class Action
 
 std::ostream& operator<<(std::ostream& os, const Action& action);
 
+namespace action
+{
+    Action fromChar(char c);
+    char toChar(Action a);
+}
+
 #endif

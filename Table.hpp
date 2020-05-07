@@ -33,7 +33,13 @@ class Table
 /*****************/
     void insurance();
     void playersPlay();
-    void playerPlay(unsigned playerIndex, unsigned handIndex = 0);
+    void playersPlay(Action firstAction); // force first play
+    Action getPlayerPlay(unsigned playerIndex, unsigned handIndex);
+    /**
+     * Plays that hand of that player
+     * Returns true if hand should be played again (like for a hit)
+     */
+    bool playerPlay(unsigned playerIndex, unsigned handIndex, Action play);
     void split(unsigned playerIndex, unsigned handIndex = 0);
     void doubleDown(unsigned playerIndex, unsigned handIndex = 0);
     bool isPlayerBust(PlayerSeat& playerSeat, unsigned handIndex = 0);
@@ -49,6 +55,10 @@ class Table
     unsigned short getCard();
     unsigned short getCardWithoutCounting();
     bool blackjack(const PlayerSeat& playerSeat, unsigned handIndex);
+
+    bool checkShoeAndPlaceBets();
+    bool insuranceAndDealerBlackjackIfAmericanDealer();
+    bool dealerPlayAndEndTurn();
   public:
 
     Table(const vector<Player*>& players, bool print=false);
@@ -63,11 +73,17 @@ class Table
     /**
      * Plays one round from scratch with specified hand
      */
-    void playRoundWithSpecificHand(unsigned short dealerUpCard, unsigned short playerCard1, unsigned short playerCard2);
+    void playRoundWithSpecificHand(
+        unsigned short dealerUpCard,
+        unsigned short playerCard1,
+        unsigned short playerCard2,
+        Action firstAction
+    );
     unsigned playRoundWithSpecificHandAndReturnPlayerBudget(
         unsigned short dealerUpCard,
         unsigned short playerCard1,
-        unsigned short playerCard2
+        unsigned short playerCard2,
+        Action firstAction
     );
 /****** TEST CERTAIN HAND *******/
     unsigned playHandTest(unsigned short dealerUpCard, unsigned short playerCard1, unsigned short playerCard2);

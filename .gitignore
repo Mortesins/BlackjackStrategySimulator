@@ -2,4 +2,6 @@ Tests/test*
 Strategy/Tests/test*
 *.o
 bjsim
+singleHandTest
 *.log
+include/*

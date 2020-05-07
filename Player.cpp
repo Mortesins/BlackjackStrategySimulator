@@ -2,6 +2,7 @@
 
 #include "Strategy/StrategyMultiplier.hpp"
 #include "PlayerSeat.hpp"
+#include "Card.hpp"
 
 Player::Player(string n, unsigned money, Strategy& s)
     : name(n), strategy(s)
@@ -79,26 +80,12 @@ ostream& operator<<(ostream& os, const Player& p)
             {
                 while (j < (p.playerSeat->cards[i].size() - 1) ) // FOR SOME REASON THE WHILE LOOP COULD NOT CHECK SIZE() > 0 --> so the outer if was put
                 {
-                    if (p.playerSeat->cards[i][j] == 1)
-                    {
-                        os << "A-";
-                    }
-                    else
-                    {
-                        os << p.playerSeat->cards[i][j] << "-";
-                    }
+                    os << card::toString(p.playerSeat->cards[i][j]) << "-";
                     j++;
                 }
                 if (p.playerSeat->cards[i].size() > 0)
                 {
-                    if (p.playerSeat->cards[i][j] == 1)
-                    {
-                        os << "A\t\t";
-                    }
-                    else
-                    {
-                        os << p.playerSeat->cards[i][j] << "\t\t";
-                    }
+                    os << card::toString(p.playerSeat->cards[i][j]) << "\t\t";
                 }
             }
         }

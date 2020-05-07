@@ -126,59 +126,86 @@ void Table::playersPlay()
     {
         for (unsigned handIndex = 0; handIndex < players[playerIndex].cards.size(); ++handIndex)
         {   // for each hand, NOTE: cards.size() should be changed by playerPlay when split
-            playerPlay(playerIndex, handIndex);
+            bool continuePlaying = true;
+            while (continuePlaying)
+            {
+                continuePlaying = playerPlay(playerIndex, handIndex, getPlayerPlay(playerIndex, handIndex));
+            }
         }
     }
 }
 
-void Table::playerPlay(unsigned playerIndex, unsigned handIndex)
-{   // plays handIndex, if split continues to play the first hand of the split, which has same handIndex
-    unsigned short dealerUpCard = dealer.upCard();
-    std::vector<Action> actionsNotAllowed;
-    double tc;
-
-    Action play;
-    do // until player stands
+void Table::playersPlay(Action firstAction)
+{
+    for (unsigned playerIndex = 0; playerIndex < players.size(); ++playerIndex)
     {
-        tc = trueCount();
-        actionsNotAllowed = rules->getActionsNotAllowed(players[playerIndex].cards, handIndex);
-        play = players[playerIndex].player->getPlay(tc, dealerUpCard, handIndex, actionsNotAllowed);
-        if (print)
+        // Do the first action on the first hand only
+        bool continuePlaying = false; // so if first action stand, then first iteration of for loop will do nothing
+        if (firstAction != Action::STAND)
         {
-            std::cout << "Play: " << play << std::endl;
+            if (print)
+            {
+                std::cout << "First hard coded play: " << firstAction << std::endl;
+            }
+            // need to call getActionsNotAllowed to trigger the no action after A-A split
+            rules->getActionsNotAllowed(players[playerIndex].cards, 0);
+            continuePlaying = playerPlay(playerIndex, 0, firstAction);
         }
-        switch (play)
-        {
-            case Action::SPLIT:
-                split(playerIndex, handIndex);
-                if (print)
-                {
-                    printPlayerSeats();
-                }
-                break; // continues play on the same handIndex
-            case Action::DOUBLEDOWN:
-                doubleDown(playerIndex, handIndex);
-                if (print)
-                {
-                    printPlayerSeats();
-                }
-                return; // player bust checked inside double down, and even if not bust the play ends here
-            case Action::HIT:
-                players[playerIndex].cards[handIndex].push_back(getCard());
-                if (print)
-                {
-                    printPlayerSeats();
-                }
-                if (isPlayerBust(players[playerIndex], handIndex))
-                {
-                    return;
-                }
-                break;
-            default:
-                break;
+        for (unsigned handIndex = 0; handIndex < players[playerIndex].cards.size(); ++handIndex)
+        {   // for each hand, NOTE: cards.size() should be changed by playerPlay when split
+            while (continuePlaying)
+            {
+                continuePlaying = playerPlay(playerIndex, handIndex, getPlayerPlay(playerIndex, handIndex));
+            }
         }
     }
-    while (play != Action::STAND);
+}
+
+Action Table::getPlayerPlay(unsigned playerIndex, unsigned handIndex)
+{
+    unsigned short dealerUpCard = dealer.upCard();
+    std::vector<Action> actionsNotAllowed = rules->getActionsNotAllowed(players[playerIndex].cards, handIndex);
+    double tc = trueCount();
+    Action play = players[playerIndex].player->getPlay(tc, dealerUpCard, handIndex, actionsNotAllowed);
+    if (print)
+    {
+        std::cout << "Play: " << play << std::endl;
+    }
+    return play;
+}
+
+bool Table::playerPlay(unsigned playerIndex, unsigned handIndex, Action play)
+{   // plays handIndex, if split continues to play the first hand of the split, which has same handIndex
+    switch (play)
+    {
+        case Action::SPLIT:
+            split(playerIndex, handIndex);
+            if (print)
+            {
+                printPlayerSeats();
+            }
+            return true; // continue playing
+        case Action::DOUBLEDOWN:
+            doubleDown(playerIndex, handIndex);
+            if (print)
+            {
+                printPlayerSeats();
+            }
+            return false; // player bust checked inside double down, and even if not bust the play ends here
+        case Action::HIT:
+            players[playerIndex].cards[handIndex].push_back(getCard());
+            if (print)
+            {
+                printPlayerSeats();
+            }
+            return !isPlayerBust(players[playerIndex], handIndex);
+        case Action::STAND:
+            return false;
+        default:
+            ostringstream os;
+            os << "Should not call Table::playerPlay with " << play;
+            throw TableError(os.str());
+    }
 }
 
 void Table::split(unsigned playerIndex, unsigned handIndex)
@@ -402,29 +429,42 @@ bool Table::playRound()
     {
         std::cout << "/******** NEW ROUND *********/" << std::endl;
     }
+    bool atLeastOneBetPlaced = checkShoeAndPlaceBets();
+    if (!atLeastOneBetPlaced)
+    {
+        return false;
+    }
+    distributeCards();
+    bool dealerBlackjack = insuranceAndDealerBlackjackIfAmericanDealer();
+    if (dealerBlackjack)
+    {
+        return true;
+    }
+    playersPlay();
+    return dealerPlayAndEndTurn();
+}
+
+inline bool Table::checkShoeAndPlaceBets()
+{
     if (shoe.isFinished())
     {
         shoe.shuffle();
         shoe.getCard(); // Remove top card
+        runningCount = 0;
         if (print)
         {
             std::cout << "Reshuffled deck" << std::endl;
         }
     }
     bool atLeastOneBetPlaced = placeBets();
-    if (!atLeastOneBetPlaced)
+    if (!atLeastOneBetPlaced && print)
     {
-        if (print)
-        {
-            std::cout << "No bets placed. True Count: "  << trueCount() << std::endl;
-        }
-        return false;
+        std::cout << "No bets placed. True Count: "  << trueCount() << std::endl;
     }
-    distributeCards();
-    return playRoundAfterDistributedCards();
+    return atLeastOneBetPlaced;
 }
 
-bool Table::playRoundAfterDistributedCards()
+inline bool Table::insuranceAndDealerBlackjackIfAmericanDealer()
 {
     bool dealerBlackjack = false;
     if (dealer.upCard() == 1)  // ACE
@@ -441,16 +481,16 @@ bool Table::playRoundAfterDistributedCards()
         printPlayerSeats();
         std::cout << "/****************************/" << std::endl;
     }
-    if (dealerBlackjack)
+    if (dealerBlackjack && print)
     {
-        if (print)
-        {
-            std::cout << "Dealer blackjack" << std::endl;
-            printPlayerSeats();
-        }
-        return true;
+        std::cout << "Dealer blackjack" << std::endl;
+        printPlayerSeats();
     }
-    playersPlay();
+    return dealerBlackjack;
+}
+
+inline bool Table::dealerPlayAndEndTurn()
+{
     bool allPlayersHaveBlackjack = allPlayersHaveBlackjacks();
     if (!allPlayersHaveBlackjack || (allPlayersHaveBlackjack && dealer.canMakeBlackjack()))
     {
@@ -461,6 +501,7 @@ bool Table::playRoundAfterDistributedCards()
         std::cout << "/****************************/" << std::endl;
         printDealerAndCardsRemaining();
     }
+    bool dealerBlackjack = false;
     if (!americanDealer)
     {
         dealerBlackjack = checkDealerBlackjack();
@@ -480,7 +521,8 @@ bool Table::playRoundAfterDistributedCards()
 void Table::playRoundWithSpecificHand(
     unsigned short dealerUpCard,
     unsigned short playerCard1,
-    unsigned short playerCard2
+    unsigned short playerCard2,
+    Action firstAction
 )
 {
     if (print)
@@ -488,18 +530,26 @@ void Table::playRoundWithSpecificHand(
         std::cout << "/******** NEW ROUND *********/" << std::endl;
     }
     shoe.shuffleAndRemoveCards({dealerUpCard, playerCard1, playerCard2});
+    runningCount = 0;
     placeBets();
     distributeCardsSpecificHand(dealerUpCard, playerCard1, playerCard2);
-    playRoundAfterDistributedCards();
+    bool dealerBlackjack = insuranceAndDealerBlackjackIfAmericanDealer();
+    if (dealerBlackjack)
+    {
+        return;
+    }
+    playersPlay(firstAction);
+    dealerPlayAndEndTurn();
 }
 
 unsigned Table::playRoundWithSpecificHandAndReturnPlayerBudget(
     unsigned short dealerUpCard,
     unsigned short playerCard1,
-    unsigned short playerCard2
+    unsigned short playerCard2,
+    Action firstAction
 )
 {
-    playRoundWithSpecificHand(dealerUpCard, playerCard1, playerCard2);
+    playRoundWithSpecificHand(dealerUpCard, playerCard1, playerCard2, firstAction);
     return players[0].player->getMoney();
 }
 
