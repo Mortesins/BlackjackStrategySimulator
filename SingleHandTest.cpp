@@ -8,14 +8,18 @@
 #include "include/cxxopts.hpp"
 #include <iostream>
 #include <iomanip>
+#include <fstream>
 
-double testHand(
+void testHand(
     unsigned numberOfSimulations,
     unsigned short dealerUpCard,
     unsigned short playerCard1,
     unsigned short playerCard2,
     Action firstAction,
-    bool print=false
+    bool print=false,
+    bool progression=true,
+    std::string csvFileName="",
+    bool silent=false
 )
 {   // returns profit, percent from starting budget
     std::vector<unsigned short> cardsToRemove = {dealerUpCard, playerCard1, playerCard2};
@@ -33,7 +37,10 @@ double testHand(
     Table t({&player}, 6, print); // 6 decks
     for (unsigned i = 0; i < numberOfSimulations; i++)
     {
-        std::cout << "\t\t\tNumber: " << i << std::endl;
+        if (progression && i % 1000 == 0)
+        {
+            std::cout << "\t\t\tNumber: " << i << std::endl;
+        }
         money = t.playRoundWithSpecificHandAndReturnPlayerBudget(dealerUpCard, playerCard1, playerCard2, firstAction);
         delta = money - STARTING_MONEY;
         if (delta > 0)
@@ -62,23 +69,31 @@ double testHand(
     double winPercentage = nWins / double(numberOfSimulations) * 100;
     double lossPercentage = nLoss / double(numberOfSimulations) * 100;
     double drawPercentage = nDraw / double(numberOfSimulations) * 100;
-    std::cout << std::endl;
-    std::cout << std::endl;
-    std::cout << "DealerUpCard: " << dealerUpCard
-                    << " playerHand: " << card::toString(playerCard1) << "-"  << card::toString(playerCard2)
-                    << " action: " << action::toChar(firstAction)
-                    << " number of simulations: " << numberOfSimulations << std::endl;
-    std::cout << "Average money: " << averageMoney << " starting from " << STARTING_MONEY << std::endl;
-    std::cout << "Average gain: " << gain
-                    << " percentage: " << std::setprecision(2) << gainPercentage << "%" <<std::endl;
-    std::cout << "Wins percentage: " << std::setprecision(2) << winPercentage << "%" <<std::endl;
-    std::cout << "Loss percentage: " << std::setprecision(2) << lossPercentage << "%" <<std::endl;
-    std::cout << "Draw percentage: " << std::setprecision(2) << drawPercentage << "%" <<std::endl;
-    std::cout << "Average win: " << averageWin
-                    << " percentage: " << std::setprecision(2) << averageWinPercentage << "%" <<std::endl;
-    std::cout << "Average loss: " << averageLoss
-                    << " percentage: " << std::setprecision(2) << averageLossPercentage << "%" <<std::endl;
-    return gain;
+    if (csvFileName != "")
+    {
+        ofstream outputfile;
+        outputfile.open(csvFileName, ios::app);
+        outputfile << gain << "," << averageWin << "," << averageLoss << "," << winPercentage << "," << lossPercentage
+                    << "," << drawPercentage << std::endl;
+        outputfile.close();
+    }
+    if (!silent)
+    {
+        std::cout << "DealerUpCard: " << dealerUpCard
+                        << " playerHand: " << card::toString(playerCard1) << "-"  << card::toString(playerCard2)
+                        << " action: " << action::toChar(firstAction)
+                        << " number of simulations: " << numberOfSimulations << std::endl;
+        std::cout << "Average money: " << averageMoney << " starting from " << STARTING_MONEY << std::endl;
+        std::cout << "Average gain: " << gain
+                        << " percentage: " << std::setprecision(2) << gainPercentage << "%" <<std::endl;
+        std::cout << "Wins percentage: " << std::setprecision(2) << winPercentage << "%" <<std::endl;
+        std::cout << "Loss percentage: " << std::setprecision(2) << lossPercentage << "%" <<std::endl;
+        std::cout << "Draw percentage: " << std::setprecision(2) << drawPercentage << "%" <<std::endl;
+        std::cout << "Average win: " << averageWin
+                        << " percentage: " << std::setprecision(2) << averageWinPercentage << "%" <<std::endl;
+        std::cout << "Average loss: " << averageLoss
+                        << " percentage: " << std::setprecision(2) << averageLossPercentage << "%" <<std::endl;
+    }
 }
 
 void playMatch(const vector<Player*>& players)
@@ -98,6 +113,11 @@ int main(int argc, char** argv)
         ("player-hand", "Player's hand, must be lik A-A or 10-5 or 9-6", cxxopts::value<std::string>())
         ("action", "First player action. H=HIT, S=STAND, D=DOUBLEDOWN, P=SPLIT", cxxopts::value<char>())
         ("print", "Flag to enable printing of hands", cxxopts::value<bool>()->default_value("0"))
+        ("progression", "Flag to enable printing of number of simulated hands every 1000 hands",
+                        cxxopts::value<bool>()->default_value("0"))
+        ("csv", "Filname where to write statistics", cxxopts::value<std::string>())
+        ("silent", "When csv is specified, this flag completely turns off output on terminal",
+                        cxxopts::value<bool>()->default_value("0"))
         ("h,help", "Print usage")
     ;
 
@@ -111,6 +131,7 @@ int main(int argc, char** argv)
     }
 
     bool print = result["print"].as<bool>();
+    bool progression = result["progression"].as<bool>();
     unsigned nSimulations = result["n"].as<unsigned>();
     Action action = action::fromChar(result["action"].as<char>());
     std::string playerHand = result["player-hand"].as<std::string>();
@@ -120,6 +141,17 @@ int main(int argc, char** argv)
     unsigned short playerCard1 = card::fromString(playerHand.substr(0, dashPosition));
     unsigned short playerCard2 = card::fromString(playerHand.substr(dashPosition+1));
 
-    testHand(nSimulations, card::fromString(dealerUpCard), playerCard1, playerCard2, action, print);
+    if (result.count("csv"))
+    {
+        std::string csvFileName = result["csv"].as<std::string>();
+        bool silent = result["silent"].as<bool>();
+        testHand(nSimulations, card::fromString(dealerUpCard), playerCard1, playerCard2, action, print, progression,
+                csvFileName, silent);
+    }
+    else
+    {
+        testHand(nSimulations, card::fromString(dealerUpCard), playerCard1, playerCard2, action, print, progression);
+    }
+
     return 0;
 }
