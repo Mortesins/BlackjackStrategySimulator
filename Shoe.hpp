@@ -13,10 +13,11 @@ class Shoe
 
   public:
     Shoe(unsigned numberOfDecks, double penetration);
-    Shoe(unsigned numberOfDecks, const std::vector<unsigned short> & cardsToRemove);
+    Shoe(unsigned numberOfDecks, const std::vector<unsigned short>& cardsToRemove);
 
     void shuffle();
-    void shuffleAndRemoveCards(const std::vector<unsigned short> & cardsToRemove);
+    void shuffleAndRemoveCards(const std::vector<unsigned short>& cardsToRemove);
+    void shuffleSpecifiedCards(std::vector<unsigned short> cards);
     unsigned short getCard();
     double decksRemaining();
     unsigned cardsRemaining();

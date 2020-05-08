@@ -111,7 +111,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST(ShoeTest, TestShuffleRandomness)
 {
-    unsigned LOOPS = 1000;
+    unsigned LOOPS = 10000;
     unsigned DECKS = 8;
     Shoe s(DECKS, 1); // 100% penetration
     std::vector<unsigned short> previousDeckState;
@@ -123,7 +123,6 @@ TEST(ShoeTest, TestShuffleRandomness)
     {
         previousDeckState.push_back(s.getCard());
     }
-
 
     unsigned zeroDifferenceCounter = 0;
     for (unsigned j = 0; j < LOOPS; ++j)
@@ -145,6 +144,45 @@ TEST(ShoeTest, TestShuffleRandomness)
     std::cout << "Zero differences average: " << zeroDifferenceAverage
               << " Percentage: " << zeroDifferenceAveragePercentage  << "%" << std::endl;
     EXPECT_NEAR(14.79, zeroDifferenceAveragePercentage, 0.11);
+}
+
+TEST(ShoeTest, TestShuffleAndRemoveCardsRandomness)
+{
+    unsigned LOOPS = 10000;
+    unsigned DECKS = 8;
+    std::vector<unsigned short> cardsToRemove{6, 6, 6};
+    unsigned numberOfCards = 52*DECKS - cardsToRemove.size();
+    Shoe s(DECKS, 1); // 100% penetration
+    std::vector<unsigned short> previousDeckState;
+    std::vector<unsigned short> newDeckState;
+    previousDeckState.reserve(numberOfCards);
+    newDeckState.reserve(numberOfCards);
+
+    for (unsigned i = 0; i < numberOfCards; ++i)
+    {
+        previousDeckState.push_back(s.getCard());
+    }
+
+    unsigned zeroDifferenceCounter = 0;
+    for (unsigned j = 0; j < LOOPS; ++j)
+    {
+        s.shuffleAndRemoveCards(cardsToRemove);
+        for (unsigned i = 0; i < numberOfCards; ++i)
+        {
+            newDeckState.push_back(s.getCard());
+            if (newDeckState[i] - previousDeckState[i] == 0)
+            {
+                ++zeroDifferenceCounter;
+            }
+        }
+        previousDeckState = newDeckState;
+        newDeckState.clear();
+    }
+    double zeroDifferenceAverage = zeroDifferenceCounter / (double)LOOPS;
+    double zeroDifferenceAveragePercentage = zeroDifferenceCounter / (double)LOOPS / (numberOfCards) * 100;
+    std::cout << "Zero differences average: " << zeroDifferenceAverage
+              << " Percentage: " << zeroDifferenceAveragePercentage  << "%" << std::endl;
+    EXPECT_NEAR(14.79, zeroDifferenceAveragePercentage, 0.20);
 }
 
 int main(int argc, char **argv) {
