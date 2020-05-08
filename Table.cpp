@@ -281,7 +281,7 @@ void Table::giveCollectMoney()
             {
                 if (blackjack(playerSeat, handIndex))
                 {
-                    playerSeat.player->receiveMoney((unsigned)playerSeat.pot[handIndex]*2.5);
+                    payPlayerBlackjack(playerSeat, handIndex);
                 }
                 else
                 {
@@ -304,8 +304,7 @@ void Table::giveCollectMoney()
                 if (blackjack(playerSeat, handIndex))
                 {
                     // pay player 3:2, NOTE: BJ vs BJ already taken care
-                    playerSeat.player->receiveMoney( (unsigned)(playerSeat.pot[handIndex]*2.5) );
-                    playerSeat.pot[handIndex] = 0;
+                    payPlayerBlackjack(playerSeat, handIndex);
                     playerSeat.updateStreakWin();
                 }
                 else
@@ -326,11 +325,23 @@ void Table::giveCollectMoney()
                         // player lost NOTE: having two hands and losing with both counts as 2 losses
                         playerSeat.updateStreakLose();
                     }
-                    playerSeat.pot[handIndex] = 0; // reset pot
                 }
+                playerSeat.pot[handIndex] = 0; // reset pot
             }
         }
     }
+}
+
+inline void Table::payPlayerBlackjack(const PlayerSeat& playerSeat, unsigned handIndex)
+{
+    double multiplier = 2.5;
+    // check if split aces
+    if (playerSeat.cards.size() == 2 && playerSeat.cards[0][0] == 1 && playerSeat.cards[1][0] == 1
+            && rules->splitAcesPaidOneToOne())
+    {
+        multiplier = 2;
+    }
+    playerSeat.player->receiveMoney((unsigned)playerSeat.pot[handIndex]*multiplier);
 }
 
 void Table::trashCardsAndEmptyPots()

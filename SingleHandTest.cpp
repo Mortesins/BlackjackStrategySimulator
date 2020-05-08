@@ -59,12 +59,12 @@ void testHand(
         }
         player.resetMoney(STARTING_MONEY);
     }
-    double averageWin = winsSum / double(numberOfSimulations);
+    double averageWin = winsSum / double(nWins);
     double averageWinPercentage = averageWin / double(STARTING_MONEY) * 100;
-    double averageLoss = lossSum / double(numberOfSimulations);
+    double averageLoss = lossSum / double(nLoss);
     double averageLossPercentage = averageLoss / double(STARTING_MONEY) * 100;
-    double averageMoney = averageWin - averageLoss + STARTING_MONEY;
-    double gain = averageMoney - STARTING_MONEY;
+    double gain = (static_cast<long long>(winsSum) - static_cast<long long>(lossSum)) / double(numberOfSimulations);
+    double averageMoney = gain + STARTING_MONEY;
     double gainPercentage =  gain / double(STARTING_MONEY) * 100;
     double winPercentage = nWins / double(numberOfSimulations) * 100;
     double lossPercentage = nLoss / double(numberOfSimulations) * 100;

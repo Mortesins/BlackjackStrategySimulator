@@ -47,6 +47,7 @@ class Table
     bool checkDealerBlackjack();
     bool allPlayersHaveBlackjacks();
     void giveCollectMoney();
+    void payPlayerBlackjack(const PlayerSeat& playerSeat, unsigned handIndex);
     void trashCardsAndEmptyPots();
     bool playRoundAfterDistributedCards();
 

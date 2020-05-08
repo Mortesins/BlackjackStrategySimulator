@@ -1,7 +1,7 @@
 #include "Rules.hpp"
 
 Rules::Rules()
-    : bjBjPush(true)
+    : bjBjPush(true), splitAcesPaid1To1(true)
 {
     aces = false;
     handsAfterAceSplit = 0;
@@ -65,4 +65,9 @@ std::vector<Action> Rules::getActionsNotAllowed(
 bool Rules::blackjackBlackjackPush() const
 {
     return bjBjPush;
+}
+
+bool Rules::splitAcesPaidOneToOne() const
+{
+    return splitAcesPaid1To1;
 }
